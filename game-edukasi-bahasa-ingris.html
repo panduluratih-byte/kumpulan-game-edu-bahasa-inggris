@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ular Tangga Procedure Text — SMK Kelas 10 (Fase E)</title>
+<style>
+  :root{
+    --struktur:#3b82f6; --bahasa:#10b981; --praktik:#f59e0b;
+    --ink:#1e293b; --paper:#fff8ec;
+  }
+  *{box-sizing:border-box; margin:0; padding:0; font-family:'Segoe UI',system-ui,sans-serif}
+  body{background:linear-gradient(135deg,#0ea5e9 0%,#6366f1 50%,#a855f7 100%); min-height:100vh; color:var(--ink); padding:16px}
+  h1{font-size:clamp(1.3rem,3.5vw,2.2rem); color:#fff; text-shadow:0 3px 0 rgba(0,0,0,.25); text-align:center}
+  .sub{text-align:center; color:#e0f2fe; margin:6px 0 18px; font-size:.95rem}
+  .wrap{max-width:1080px; margin:0 auto}
+  .panel{background:var(--paper); border-radius:18px; padding:18px; box-shadow:0 12px 30px rgba(0,0,0,.25)}
+  button{cursor:pointer; border:none; border-radius:12px; font-weight:700; transition:.15s}
+  button:disabled{opacity:.45; cursor:not-allowed}
+  .btn-main{background:#f59e0b; color:#fff; padding:12px 22px; font-size:1.05rem; box-shadow:0 4px 0 #b45309}
+  .btn-main:hover:not(:disabled){transform:translateY(-2px)}
+  .btn-ghost{background:#e2e8f0; color:#334155; padding:8px 14px}
+  /* ---------- SETUP ---------- */
+  .chips{display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin:10px 0}
+  .chip{background:#fff; border:2px solid #cbd5e1; border-radius:999px; padding:6px 14px; font-size:.82rem; font-weight:600}
+  .materi{display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:12px; margin:14px 0}
+  .materi label{border:3px solid #cbd5e1; border-radius:14px; padding:12px; cursor:pointer; background:#fff}
+  .materi input{margin-right:8px}
+  .materi label:has(input:checked){border-color:#f59e0b; background:#fff7e6}
+  .field{margin:10px 0}
+  .field label{font-weight:700; display:block; margin-bottom:6px}
+  .field input,.field select{width:100%; padding:10px; border:2px solid #cbd5e1; border-radius:10px; font-size:1rem; margin-bottom:8px}
+  /* ---------- GAME ---------- */
+  #screen-game{display:none}
+  .game-layout{display:flex; gap:16px; flex-wrap:wrap; justify-content:center; align-items:flex-start}
+  .board-zone{flex:1 1 480px; max-width:620px; min-width:300px}
+  .board{position:relative; aspect-ratio:1/1; display:grid; grid-template-columns:repeat(6,1fr); grid-template-rows:repeat(6,1fr);
+         background:#8b5e34; padding:8px; border-radius:14px; box-shadow:inset 0 0 0 4px #6b4423, 0 10px 25px rgba(0,0,0,.35)}
+  .cell{position:relative; border:1px solid rgba(0,0,0,.12); display:flex; align-items:center; justify-content:center; font-size:clamp(14px,4vw,26px)}
+  .cell.alt{background:#fdeecd}. .cell{background:#fff8e7}
+  .cell.ladder{background:#dcfce7}. .cell.snake{background:#fee2e2}. .cell.chal{background:#fef9c3}
+  .cell.finish{background:linear-gradient(135deg,#fbbf24,#f59e0b)}
+  .cell.start{background:linear-gradient(135deg,#93c5fd,#3b82f6)}
+  .num{position:absolute; top:2px; left:5px; font-size:clamp(8px,1.6vw,11px); font-weight:800; color:#64748b}
+  .cell.finish .num,.cell.start .num{color:#fff}
+  svg.overlay{position:absolute; inset:8px; width:calc(100% - 16px); height:calc(100% - 16px); pointer-events:none; z-index:2}
+  #tokens{position:absolute; inset:8px; pointer-events:none; z-index:3}
+  .token{position:absolute; width:5.5%; height:5.5%; border-radius:50%; border:2.5px solid #fff; box-shadow:0 3px 6px rgba(0,0,0,.4);
+         transform:translate(-50%,-50%); transition:left .3s, top .3s; z-index:4}
+  .side{flex:1 1 280px; max-width:360px; display:flex; flex-direction:column; gap:12px}
+  .turnbox{text-align:center}
+  #dice{font-size:72px; line-height:1; margin:8px 0; filter:drop-shadow(0 4px 3px rgba(0,0,0,.3))}
+  .plist{display:flex; flex-direction:column; gap:6px}
+  .prow{display:flex; align-items:center; gap:8px; background:#fff; border:2px solid #e2e8f0; border-radius:10px; padding:7px 10px; font-size:.9rem}
+  .prow.active{border-color:#f59e0b; background:#fff7e6; box-shadow:0 0 0 3px rgba(245,158,11,.25)}
+  .dot{width:16px; height:16px; border-radius:50%; border:2px solid #fff; box-shadow:0 0 0 1px #94a3b8}
+  .prow b{flex:1; text-align:left}
+  #log{background:#0f172a; color:#a7f3d0; border-radius:10px; padding:10px; font-size:.78rem; height:150px; overflow-y:auto; font-family:consolas,monospace}
+  #log li{margin-bottom:4px; list-style:none}
+  .topbar{display:flex; gap:8px; justify-content:center; margin-bottom:12px; flex-wrap:wrap}
+  /* ---------- MODAL ---------- */
+  .modal{position:fixed; inset:0; background:rgba(15,23,42,.7); display:flex; align-items:center; justify-content:center; z-index:50; padding:14px}
+  .modal[hidden]{display:none}
+  .mbox{background:#fff; border-radius:18px; max-width:560px; width:100%; max-height:88vh; overflow-y:auto; padding:22px; box-shadow:0 20px 60px rgba(0,0,0,.5); animation:pop .25s}
+  @keyframes pop{from{transform:scale(.85); opacity:0}}
+  .catbadge{display:inline-block; color:#fff; border-radius:999px; padding:5px 14px; font-size:.78rem; font-weight:800; margin-bottom:10px}
+  .ctx{background:#f1f5f9; border-left:5px solid #f59e0b; padding:10px; border-radius:8px; font-weight:600; margin-bottom:12px; font-size:.92rem}
+  .qtext{font-size:1.08rem; font-weight:700; margin-bottom:14px; line-height:1.45}
+  .opt{display:block; width:100%; text-align:left; background:#f8fafc; border:2px solid #cbd5e1; padding:11px 14px; margin-bottom:8px; font-size:.95rem; font-weight:600}
+  .opt:hover:not(:disabled){border-color:#3b82f6; background:#eff6ff}
+  .opt.good{border-color:#16a34a; background:#dcfce7}
+  .opt.bad{border-color:#dc2626; background:#fee2e2}
+  .ansbox{background:#ecfdf5; border:2px dashed #10b981; border-radius:10px; padding:12px; margin:10px 0; font-weight:600}
+  .judge{display:flex; gap:10px; margin-top:12px}
+  .judge button{flex:1; padding:12px; font-size:1rem}
+  .yes{background:#16a34a; color:#fff}. .no{background:#dc2626; color:#fff}
+  .feedback{font-weight:800; margin:10px 0; font-size:1rem}
+  .rules-txt h3{margin:12px 0 6px; color:#b45309}
+  .rules-txt ul{margin-left:20px; line-height:1.6; font-size:.92rem}
+  .win-emoji{font-size:64px; text-align:center}
+  @media(max-width:720px){ .side{max-width:100%} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>🐍 Ular Tangga Bahasa Inggris 🪜</h1>
+  <p class="sub">Procedure Text (Fase E) — SMK Kelas 10 • Board Game Edukatif</p>
+
+  <!-- ============ LAYAR SETUP ============ -->
+  <div id="screen-setup" class="panel">
+    <div class="chips">
+      <span class="chip">🗺️ Papan 36 kotak</span>
+      <span class="chip">🪜 4 Tangga</span>
+      <span class="chip">🐍 4 Ular</span>
+      <span class="chip">⭐ 6 Kotak Tantangan</span>
+      <span class="chip">🃏 Kartu 3 Kategori</span>
+      <span class="chip">🎲 Pion & Dadu</span>
+    </div>
+    <div class="field">
+      <label>📚 Pilih Paket Kartu Pertanyaan:</label>
+      <div class="materi">
+        <label><input type="radio" name="materi" value="procedure" checked>
+          <b>Procedure Text</b> — 13 kartu (Struktur, Tata Bahasa, Praktik Spontan) <i>sesuai spesifikasi</i></label>
+        <label><input type="radio" name="materi" value="descriptive">
+          <b>Descriptive Text</b> — 10 kartu (bonus paket alternatif)</label>
+      </div>
+    </div>
+    <div class="field">
+      <label>👥 Jumlah Pemain (kelompok kecil):</label>
+      <select id="pcount">
+        <option value="2">2 siswa</option><option value="3">3 siswa</option>
+        <option value="4" selected>4 siswa</option><option value="5">5 siswa</option>
+      </select>
+      <div id="names"></div>
+    </div>
+    <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap">
+      <button class="btn-main" id="btnStart">🚀 MULAI MAIN</button>
+      <button class="btn-ghost" id="btnRules0">📖 Lihat Aturan</button>
+    </div>
+  </div>
+
+  <!-- ============ LAYAR GAME ============ -->
+  <div id="screen-game">
+    <div class="topbar">
+      <button class="btn-ghost" id="btnRules">📖 Aturan</button>
+      <button class="btn-ghost" id="btnRestart">⟲ Ulangi</button>
+      <button class="btn-ghost" id="btnHome">🏠 Menu</button>
+      <span class="chip" id="materiBadge"></span>
+    </div>
+    <div class="game-layout">
+      <div class="board-zone panel">
+        <div class="board" id="board">
+          <svg class="overlay" id="overlay" viewBox="0 0 600 600"></svg>
+          <div id="tokens"></div>
+        </div>
+      </div>
+      <div class="side">
+        <div class="panel turnbox">
+          <div id="turnLabel" style="font-weight:800; font-size:1.05rem"></div>
+          <div id="dice">🎲</div>
+          <button class="btn-main" id="btnRoll">🎲 LEMPAR DADU</button>
+        </div>
+        <div class="panel"><div class="plist" id="plist"></div></div>
+        <div class="panel"><ul id="log"></ul></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MODAL KARTU PERTANYAAN ============ -->
+<div class="modal" id="modalCard" hidden><div class="mbox">
+  <span class="catbadge" id="cardCat"></span>
+  <div class="ctx" id="cardCtx"></div>
+  <div class="qtext" id="cardQ"></div>
+  <div id="cardBody"></div>
+  <div class="feedback" id="cardFb" hidden></div>
+  <button class="btn-main" id="btnNext" hidden style="width:100%">Lanjutkan ➜</button>
+</div></div>
+
+<!-- ============ MODAL ATURAN ============ -->
+<div class="modal" id="modalRules" hidden><div class="mbox rules-txt">
+  <h2 style="text-align:center">📖 Rules of the Game</h2>
+  <h3>⚙️ Aturan Main</h3>
+  <ul>
+    <li><b>Formasi:</b> kelompok kecil 3–5 siswa (web mendukung 2–5).</li>
+    <li><b>Pergerakan:</b> siswa melempar dadu bergantian dan menjalankan pionnya.</li>
+    <li><b>🪜 Kaki Tangga:</b> jawab 1 kartu dengan <b>benar</b> untuk naik. Salah → tetap di bawah.</li>
+    <li><b>🐍 Kepala Ular:</b> jawab 1 kartu. <b>Benar</b> = selamat (tidak turun). <b>Salah</b> = turun ke ekor ular.</li>
+    <li><b>⭐ Kotak Tantangan:</b> ambil kartu tantangan. <b>Benar</b> = +1 ⭐ & tetap. <b>Salah</b> = mundur 3 kotak.</li>
+    <li><b>🏆 Menang:</b> pemain pertama yang mencapai kotak 36 dengan <b>angka dadu pas</b> (jika lebih, pion tetap).</li>
+  </ul>
+  <h3>🃏 Kategori Kartu (Capaian Pembelajaran)</h3>
+  <ul>
+    <li><b style="color:var(--struktur)">Struktur Teks</b> — social function & generic structure.</li>
+    <li><b style="color:var(--bahasa)">Tata Bahasa</b> — language features (imperative, temporal conjunction, action verb, tense, adverb).</li>
+    <li><b style="color:var(--praktik)">Praktik Spontan</b> — speaking/action challenge (dinilai guru/kelompok).</li>
+  </ul>
+  <h3>🛠️ Tips DIY Kelas</h3>
+  <ul>
+    <li>Versi cetak: desain papan di Canva (template "Snakes and Ladders"), cetak A3 + laminating; kartu di art paper.</li>
+    <li>Versi digital: proyekskan halaman ini lewat proyektor kelas — siap dimainkan!</li>
+  </ul>
+  <button class="btn-main" style="width:100%; margin-top:14px" onclick="document.getElementById('modalRules').hidden=true">Mengerti ✔</button>
+</div></div>
+
+<!-- ============ MODAL MENANG ============ -->
+<div class="modal" id="modalWin" hidden><div class="mbox" style="text-align:center">
+  <div class="win-emoji">🎉🏆</div>
+  <h2 id="winTitle"></h2>
+  <p id="winInfo" style="margin:10px 0 18px"></p>
+  <button class="btn-main" id="btnAgain">🔁 Main Lagi</button>
+  <button class="btn-ghost" id="btnMenu">🏠 Menu</button>
+</div></div>
+
+<script>
+/* ================== DATA PAPAN ================== */
+const COLS=6, ROWS=6, LAST=36;
+const LADDERS={2:15, 9:20, 14:29, 18:31};              // kaki -> puncak
+const SNAKES ={35:16, 33:13, 26:6, 24:10};             // kepala -> ekor
+const CHALLENGES=[5,11,17,23,28,32];                   // kotak bintang ⭐
+const PCOLORS=['#ef4444','#3b82f6','#22c55e','#f59e0b','#a855f7'];
+const CATS={
+  struktur:{label:'Kategori 1 • Struktur Teks', color:'#3b82f6'},
+  bahasa  :{label:'Kategori 2 • Tata Bahasa (Language Features)', color:'#10b981'},
+  praktik :{label:'Kategori 3 • Praktik Spontan (Speaking/Action)', color:'#f59e0b'}
+};
+
+/* ================== DECK KARTU ================== */
+const DECKS={
+procedure:[
+ {cat:'struktur',type:'mc',q:`What are the three main parts of a procedure text?`,opts:[`Goal/Aim, Materials/Ingredients, and Steps/Methods`,`Orientation, Complication, and Resolution`,`Identification and Description`,`Thesis, Arguments, and Recommendation`],c:0},
+ {cat:'struktur',type:'mc',q:`"How to Operate a Digital Camera." What part of the procedure text is this?`,opts:[`The Goal/Aim`,`The Materials/Equipment`,`The Steps/Methods`,`The Conclusion`],c:0},
+ {cat:'struktur',type:'mc',q:`If you see a list of tools like "screwdriver, hammer, and nails," which section of the text is it?`,opts:[`Materials or Equipment`,`Goal/Aim`,`Steps/Methods`,`Social Function`],c:0},
+ {cat:'struktur',type:'mc',q:`What is the social function of a procedure text?`,opts:[`To describe how something is achieved through a sequence of actions or steps`,`To tell a story in the past tense`,`To describe a particular person, place, or thing`,`To persuade the reader to buy something`],c:0},
+ {cat:'bahasa',type:'mc',q:`Change the verb "turn on" into an imperative sentence!`,opts:[`Turn on the computer!`,`You turn on the computer!`,`Turning on the computer!`,`Turns on the computer!`],c:0,note:`Jangan gunakan subjek 'You'.`},
+ {cat:'bahasa',type:'judge',q:`Mention 3 temporal conjunctions (adverbs of sequence) used in procedure text!`,a:`First, Next, Then, After that, Finally (pilih 3).`},
+ {cat:'bahasa',type:'mc',q:`Identify the action verb in this sentence: "Slowly pour the milk into the bowl."`,opts:[`Pour`,`Slowly`,`Milk`,`Bowl`],c:0},
+ {cat:'bahasa',type:'mc',q:`What tense is mostly used in procedure text?`,opts:[`Simple Present Tense`,`Simple Past Tense`,`Present Continuous Tense`,`Future Tense`],c:0},
+ {cat:'bahasa',type:'judge',q:`Give an example of an adverb of manner!`,a:`Carefully, slowly, tightly, evenly, etc.`},
+ {cat:'praktik',type:'judge',q:`Challenge: Mention 3 steps on "How to wash your hands properly" using temporal conjunctions!`,a:`Contoh: First, wet your hands with clean water. Next, apply soap and rub all surfaces. Finally, rinse and dry your hands.`},
+ {cat:'praktik',type:'judge',q:`Challenge: Look at your friend. Give them a command (imperative sentence) to do something!`,a:`Contoh: "Open your book, please!" / "Stand up!" — imperatif tanpa subjek.`},
+ {cat:'praktik',type:'judge',q:`Challenge: Explain briefly the difference between "Materials" and "Equipment"!`,a:`Materials = bahan yang habis dipakai; Equipment = alat/perkakas yang digunakan.`},
+ {cat:'praktik',type:'judge',q:`Challenge: Make a negative imperative sentence using the word "touch"!`,a:`Contoh: "Do not touch the hot pan!"`}
+],
+descriptive:[
+ {cat:'struktur',type:'mc',q:`What are the two main parts of a descriptive text?`,opts:[`Identification and Description`,`Goal and Steps`,`Orientation and Complication`,`Thesis and Arguments`],c:0},
+ {cat:'struktur',type:'mc',q:`A paragraph introduces "My Cat Mochi" generally (kind, age, name). Which part is this?`,opts:[`Identification`,`Description`,`Steps`,`Materials`],c:0},
+ {cat:'struktur',type:'mc',q:`What is the social function of a descriptive text?`,opts:[`To describe a particular person, place, or thing in detail`,`To tell how to make something`,`To report past events`,`To persuade the reader`],c:0},
+ {cat:'struktur',type:'mc',q:`Which part describes the features/characteristics (physical, personality) of the object?`,opts:[`Description`,`Identification`,`Goal`,`Conclusion`],c:0},
+ {cat:'bahasa',type:'mc',q:`What tense is mostly used in a descriptive text?`,opts:[`Simple Present Tense`,`Simple Past Tense`,`Future Tense`,`Present Continuous`],c:0},
+ {cat:'bahasa',type:'mc',q:`"My grandfather has a warm and gentle smile." The adjectives are...`,opts:[`warm & gentle`,`has & smile`,`grandfather & my`,`a & the`],c:0},
+ {cat:'bahasa',type:'mc',q:`Choose the correct 'be': "My school ... clean and cozy."`,opts:[`is`,`are`,`am`,`be`],c:0},
+ {cat:'bahasa',type:'judge',q:`Give two adjectives to describe a beach!`,a:`Contoh: beautiful, clean, sandy, wide, crowded.`},
+ {cat:'praktik',type:'judge',q:`Challenge: Describe your best friend in two sentences using at least two adjectives!`,a:`Contoh: "My best friend is Dina. She is kind and funny."`},
+ {cat:'praktik',type:'judge',q:`Challenge: Describe your classroom using 'There is / There are'!`,a:`Contoh: "There is a whiteboard in front of the class. There are twenty chairs."`}
+]};
+
+/* ================== STATE & UTIL ================== */
+let S=null, pending=null;
+const $=id=>document.getElementById(id);
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]];}return a;};
+function coord(n){const r=Math.floor((n-1)/COLS), rem=(n-1)%COLS, c=r%2?COLS-1-rem:rem; return{r,c};}
+function centerPct(n){const{r,c}=coord(n); return{x:(c+.5)*100/COLS, y:(ROWS-1-r+.5)*100/ROWS};}
+function centerU(n){const{r,c}=coord(n); return{x:(c+.5)*100, y:(ROWS-1-r+.5)*100};}
+function log(m){const li=document.createElement('li'); li.textContent=m; const L=$('log'); L.prepend(li); while(L.children.length>40)L.lastChild.remove();}
+
+/* ================== SETUP UI ================== */
+function buildNames(){const n=+$('pcount').value; $('names').innerHTML=Array.from({length:n},(_,i)=>`<input id="nm${i}" placeholder="Nama Pemain ${i+1}" value="Pemain ${i+1}">`).join('');}
+$('pcount').onchange=buildNames; buildNames();
+$('btnRules0').onclick=()=>$('modalRules').hidden=false;
+$('btnRules').onclick =()=>$('modalRules').hidden=false;
+$('modalRules').onclick=e=>{if(e.target.id==='modalRules')$('modalRules').hidden=true;};
+$('btnHome').onclick=()=>{if(confirm('Kembali ke menu awal? Progres hilang.'))location.reload();};
+$('btnRestart').onclick=()=>startGame(S.materi,S.players.map(p=>p.name));
+$('btnAgain').onclick =()=>{$('modalWin').hidden=true; startGame(S.materi,S.players.map(p=>p.name));};
+$('btnMenu').onclick  =()=>location.reload();
+$('btnStart').onclick=()=>{
+  const materi=document.querySelector('input[name=materi]:checked').value;
+  const names=Array.from({length:+$('pcount').value},(_,i)=>$('nm'+i).value.trim()||('Pemain '+(i+1)));
+  startGame(materi,names);
+};
+
+/* ================== MULAI GAME ================== */
+function startGame(materi,names){
+  S={materi, phase:'idle', turn:0, deck:shuffle(DECKS[materi]),
+     players:names.map((n,i)=>({name:n,color:PCOLORS[i],pos:1,stars:0}))};
+  $('screen-setup').style.display='none'; $('screen-game').style.display='block';
+  $('materiBadge').textContent = materi==='procedure' ? '📚 Procedure Text' : '📚 Descriptive Text';
+  $('log').innerHTML=''; buildBoard(); drawOverlay(); buildTokens(); updatePanel();
+  log('🎮 Permainan dimulai! Giliran: '+S.players[0].name);
+}
+
+/* ================== PAPAN ================== */
+function buildBoard(){
+  const b=$('board'); b.querySelectorAll('.cell').forEach(e=>e.remove());
+  for(let vr=0;vr<ROWS;vr++){const r=ROWS-1-vr;
+    for(let c=0;c<COLS;c++){
+      const n=r*COLS+1+(r%2?COLS-1-c:c);
+      const d=document.createElement('div');
+      d.className='cell'+(((r+c)%2)?' alt':'');
+      if(LADDERS[n])d.className+=' ladder'; if(SNAKES[n])d.className+=' snake';
+      if(CHALLENGES.includes(n))d.className+=' chal';
+      if(n===LAST)d.className+=' finish'; if(n===1)d.className+=' start';
+      let ic=''; if(LADDERS[n])ic='🪜'; else if(SNAKES[n])ic='🐍'; else if(CHALLENGES.includes(n))ic='⭐';
+      if(n===LAST)ic='🏁'; if(n===1)ic='🚀';
+      d.innerHTML=`<span class="num">${n}</span><span>${ic}</span>`;
+      b.insertBefore(d,$('overlay'));
+    }}
+}
+function drawOverlay(){
+  let svg=''; const scol=['#16a34a','#7c3aed','#dc2626','#0891b2'];
+  for(const k in LADDERS){ // tangga: 2 rail + anak tangga
+    const H=centerU(+k), T=centerU(LADDERS[k]);
+    const dx=T.x-H.x, dy=T.y-H.y, len=Math.hypot(dx,dy), px=-dy/len, py=dx/len, o=11;
+    svg+=`<line x1="${H.x+px*o}" y1="${H.y+py*o}" x2="${T.x+px*o}" y2="${T.y+py*o}" stroke="#b45309" stroke-width="5" stroke-linecap="round"/>`;
+    svg+=`<line x1="${H.x-px*o}" y1="${H.y-py*o}" x2="${T.x-px*o}" y2="${T.y-py*o}" stroke="#b45309" stroke-width="5" stroke-linecap="round"/>`;
+    [0.12,0.31,0.5,0.69,0.88].forEach(t=>{const X=H.x+dx*t,Y=H.y+dy*t;
+      svg+=`<line x1="${X+px*o}" y1="${Y+py*o}" x2="${X-px*o}" y2="${Y-py*o}" stroke="#d97706" stroke-width="4" stroke-linecap="round"/>`;});
+  }
+  let i=0;
+  for(const k in SNAKES){ // ular: kurva + emoji kepala
+    const H=centerU(+k), T=centerU(SNAKES[k]);
+    const dx=T.x-H.x, dy=T.y-H.y, len=Math.hypot(dx,dy), px=-dy/len, py=dx/len, amp=46;
+    const c1x=H.x+dx*.25+px*amp, c1y=H.y+dy*.25+py*amp, c2x=H.x+dx*.75-px*amp, c2y=H.y+dy*.75-py*amp;
+    svg+=`<path d="M ${H.x} ${H.y} C ${c1x} ${c1y}, ${c2x} ${c2y}, ${T.x} ${T.y}" fill="none" stroke="${scol[i%4]}" stroke-width="9" stroke-linecap="round" opacity=".85"/>`;
+    svg+=`<text x="${H.x}" y="${H.y+2}" font-size="30" text-anchor="middle" dominant-baseline="central">🐍</text>`;
+    i++;
+  }
+  $('overlay').innerHTML=svg;
+}
+function buildTokens(){
+  const t=$('tokens'); t.innerHTML='';
+  S.players.forEach((p,i)=>{const d=document.createElement('div'); d.className='token'; d.id='tk'+i; d.style.background=p.color; t.appendChild(d);});
+  placeTokens();
+}
+const OFF=[[-2.4,-2.4],[2.4,-2.4],[-2.4,2.4],[2.4,2.4],[0,0]];
+function placeTokens(){
+  S.players.forEach((p,i)=>{const c=centerPct(p.pos), o=OFF[i];
+    const el=$('tk'+i); el.style.left=(c.x+o[0])+'%'; el.style.top=(c.y+o[1])+'%';});
+}
+
+/* ================== PANEL & GILIRAN ================== */
+function updatePanel(){
+  $('plist').innerHTML=S.players.map((p,i)=>
+    `<div class="prow${i===S.turn?' active':''}"><span class="dot" style="background:${p.color}"></span>
+     <b>${p.name}</b><span>📍${p.pos}</span><span>⭐${p.stars}</span></div>`).join('');
+  const cur=S.players[S.turn];
+  $('turnLabel').innerHTML=`Giliran: <span style="color:${cur.color}">${cur.name}</span>`;
+  $('btnRoll').disabled = S.phase!=='idle';
+}
+function stepTo(target,done){
+  const step=target>S.players[S.turn].pos?1:-1;
+  const iv=setInterval(()=>{const p=S.players[S.turn]; p.pos+=step; placeTokens(); updatePanel();
+    if(p.pos===target){clearInterval(iv); done&&done();}},320);
+}
+
+/* ================== DADU ================== */
+const FACES=['⚀','⚁','⚂','⚃','⚄','⚅'];
+$('btnRoll').onclick=()=>{
+  if(S.phase!=='idle')return; S.phase='moving'; updatePanel();
+  const cur=S.players[S.turn]; let t=0;
+  const iv=setInterval(()=>{$('dice').textContent=FACES[Math.random()*6|0]; if(++t>9){clearInterval(iv);
+    const v=1+Math.random()*6|0; $('dice').textContent=FACES[v-1];
+    log(`🎲 ${cur.name} melempar dadu: ${v}`);
+    if(cur.pos+v>LAST){log(` Butuh angka pas! Pion tetap di kotak ${cur.pos}.`); S.phase='idle'; S.turn=(S.turn+1)%S.players.length; updatePanel(); return;}
+    stepTo(cur.pos+v,()=>{log(`🚶 ${cur.name} maju ke kotak ${cur.pos}`); resolveSquare();});
+  }},90);
+};
+
+/* ================== RESOLUSI KOTAK ================== */
+function resolveSquare(){
+  const p=S.players[S.turn], n=p.pos;
+  if(n===LAST)return win();
+  if(LADDERS[n])return openCard({type:'ladder',to:LADDERS[n]},`🪜 Pion di KAKI TANGGA kotak ${n}! Jawab BENAR untuk naik ke kotak ${LADDERS[n]}. Salah → tetap di bawah.`);
+  if(SNAKES[n]) return openCard({type:'snake', to:SNAKES[n]}, `🐍 Pion di KEPALA ULAR kotak ${n}! Jawab BENAR agar selamat. Salah → meluncur ke ekor (kotak ${SNAKES[n]}).`);
+  if(CHALLENGES.includes(n))return openCard({type:'chal'},`⭐ KOTAK TANTANGAN (${n})! Ambil kartu tantangan. Benar → +1⭐. Salah → mundur 3 kotak.`);
+  endTurn();
+}
+function endTurn(){ if(S.players[S.turn].pos===LAST)return win(); S.phase='idle'; S.turn=(S.turn+1)%S.players.length; updatePanel(); log('➡️ Giliran: '+S.players[S.turn].name); }
+
+/* ================== KARTU PERTANYAAN ================== */
+function drawCard(){ if(!S.deck.length)S.deck=shuffle(DECKS[S.materi]); return S.deck.pop(); }
+function openCard(ev,ctx){
+  S.phase='question'; updatePanel();
+  const card=drawCard(); pending={ev,correct:null};
+  const cat=CATS[card.cat];
+  $('cardCat').textContent=cat.label; $('cardCat').style.background=cat.color;
+  $('cardCtx').textContent=ctx; $('cardQ').textContent=card.q;
+  $('cardFb').hidden=true; $('btnNext').hidden=true;
+  const body=$('cardBody'); body.innerHTML='';
+  if(card.type==='mc'){
+    const opts=shuffle(card.opts.map((t,i)=>({t,ok:i===card.c})));
+    opts.forEach(o=>{const b=document.createElement('button'); b.className='opt'; b.textContent=o.t;
+      b.onclick=()=>{body.querySelectorAll('.opt').forEach(x=>x.disabled=true);
+        b.classList.add(o.ok?'good':'bad'); if(!o.ok)body.querySelectorAll('.opt').forEach(x=>{if(x.textContent===card.opts[card.c])x.classList.add('good');});
+        finishAnswer(o.ok, card);};
+      body.appendChild(b);});
+  }else{
+    const rv=document.createElement('button'); rv.className='btn-ghost'; rv.textContent='👁 Lihat Jawaban / Contoh';
+    const ab=document.createElement('div'); ab.className='ansbox'; ab.hidden=true; ab.textContent='💡 '+card.a;
+    rv.onclick=()=>{ab.hidden=false; rv.disabled=true;};
+    const j=document.createElement('div'); j.className='judge';
+    j.innerHTML=`<button class="yes">✅ Benar</button><button class="no">❌ Salah</button>`;
+    body.append(rv,ab,j);
+    j.children[0].onclick=()=>finishAnswer(true,card);
+    j.children[1].onclick=()=>finishAnswer(false,card);
+  }
+  $('modalCard').hidden=false;
+}
+function finishAnswer(ok,card){
+  pending.correct=ok;
+  const fb=$('cardFb'); fb.hidden=false;
+  fb.innerHTML = ok ? '✅ BENAR! Kerja bagus! 🎉'
+    : `❌ SALAH! Jawaban: <i>${card.type==='mc'?card.opts[card.c]:card.a}</i>`;
+  if(card.note)fb.innerHTML+=` <small>(${card.note})</small>`;
+  $('btnNext').hidden=false;
+}
+$('btnNext').onclick=()=>{
+  $('modalCard').hidden=true;
+  const p=S.players[S.turn], ev=pending.ev, ok=pending.correct;
+  if(ev.type==='ladder'){
+    if(ok){log(`✅ ${p.name} benar! Naik tangga ke kotak ${ev.to}.`); stepTo(ev.to,endTurn);}
+    else  {log(`❌ ${p.name} salah! Tetap di kaki tangga.`); endTurn();}
+  }else if(ev.type==='snake'){
+    if(ok){log(`✅ ${p.name} benar! Selamat dari ular. 🛡️`); endTurn();}
+    else  {log(`❌ ${p.name} salah! Meluncur ke ekor kotak ${ev.to}. 🐍`); stepTo(ev.to,endTurn);}
+  }else{
+    if(ok){p.stars++; log(`⭐ ${p.name} benar! +1 bintang (total ${p.stars}).`); endTurn();}
+    else  {const t=Math.max(1,p.pos-3); log(`❌ ${p.name} salah! Mundur 3 kotak ke ${t}.`); stepTo(t,endTurn);}
+  }
+  updatePanel();
+};
+
+/* ================== MENANG ================== */
+function win(){
+  S.phase='over'; updatePanel();
+  const p=S.players[S.turn];
+  log(`🏆 ${p.name} MENANG!`);
+  $('winTitle').textContent=p.name+' MENANG! 🏆';
+  $('winInfo').innerHTML=`Berhasil mencapai kotak ${LAST} dengan angka dadu pas.<br>⭐ Bintang tantangan: <b>${p.stars}</b>`;
+  $('modalWin').hidden=false;
+}
+</script>
+</body>
+</html>
