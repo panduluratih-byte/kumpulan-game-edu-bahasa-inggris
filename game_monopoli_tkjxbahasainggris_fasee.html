@@ -1,0 +1,1103 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MONOTECH — Monopoli Descriptive Text • TKJ Fase E</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bungee&family=Rubik:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#07131d; --panel:#0d2131; --panel2:#122c42; --ink:#eaf6ff; --muted:#8fb0c4;
+  --line:rgba(120,200,255,.16);
+  --cyan:#35d6e8; --lime:#a3e635; --amber:#ffc531; --red:#ff5d6c;
+  --dev:#38d1e0; --tool:#ff9f43; --cab:#3ddc84; --inf:#b07cff; --gold:#ffd166;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+[hidden]{display:none!important}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Rubik',sans-serif; background:var(--bg); color:var(--ink); min-height:100vh; overflow-x:hidden;
+}
+body::before{ /* grid PCB halus */
+  content:""; position:fixed; inset:0; z-index:0; pointer-events:none; opacity:.5;
+  background:
+    repeating-linear-gradient(0deg, transparent 0 46px, rgba(90,190,255,.045) 46px 47px),
+    repeating-linear-gradient(90deg, transparent 0 46px, rgba(90,190,255,.045) 46px 47px);
+}
+body::after{
+  content:""; position:fixed; inset:0; z-index:0; pointer-events:none;
+  background:radial-gradient(1200px 700px at 70% -10%, rgba(53,214,232,.10), transparent 60%),
+             radial-gradient(900px 600px at 8% 110%, rgba(176,124,255,.09), transparent 60%);
+}
+#traces{position:fixed; inset:0; width:100%; height:100%; z-index:0; pointer-events:none; opacity:.55}
+.mono{font-family:'JetBrains Mono',monospace}
+.bungee{font-family:'Bungee',cursive}
+button{font-family:inherit; cursor:pointer}
+::selection{background:var(--cyan); color:#06222b}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-thumb{background:#1d4059;border-radius:8px}
+::-webkit-scrollbar-track{background:#0a1a28}
+
+/* ============ TOPBAR ============ */
+#topbar{
+  position:sticky; top:0; z-index:50; display:flex; align-items:center; gap:16px; flex-wrap:wrap;
+  padding:10px 20px; background:rgba(7,19,29,.92); backdrop-filter:blur(6px); border-bottom:1px solid var(--line);
+}
+.logo{display:flex; flex-direction:column; line-height:1}
+.logo .bungee{font-size:26px; letter-spacing:2px; color:var(--ink);
+  text-shadow:0 0 18px rgba(53,214,232,.5)}
+.logo .bungee b{color:var(--cyan); font-weight:400}
+.logo small{font-size:10.5px; letter-spacing:2.4px; color:var(--muted); margin-top:3px; text-transform:uppercase}
+.topchips{display:flex; gap:8px; flex-wrap:wrap; margin-left:auto; align-items:center}
+.chip{
+  display:inline-flex; align-items:center; gap:7px; padding:6px 12px; border:1px solid var(--line);
+  border-radius:999px; background:var(--panel); font-size:12.5px; color:var(--ink);
+}
+.chip b{font-family:'JetBrains Mono',monospace; color:var(--amber)}
+.chip .dot{width:8px;height:8px;border-radius:50%;background:var(--lime); box-shadow:0 0 10px var(--lime); animation:blink 1.4s infinite}
+@keyframes blink{50%{opacity:.25}}
+.tbtn{
+  border:1px solid var(--line); background:var(--panel); color:var(--ink); padding:8px 13px; border-radius:10px;
+  font-weight:700; font-size:12.5px; letter-spacing:.4px; transition:.18s;
+}
+.tbtn:hover{transform:translateY(-2px); border-color:var(--cyan); box-shadow:0 6px 18px rgba(53,214,232,.18)}
+.tbtn.danger{border-color:rgba(255,93,108,.4); color:#ffb3bb}
+.tbtn.danger:hover{border-color:var(--red); box-shadow:0 6px 18px rgba(255,93,108,.2)}
+#timebar{position:absolute; left:0; bottom:-1px; height:3px; background:linear-gradient(90deg,var(--cyan),var(--lime)); width:100%; transform-origin:left; transition:width 1s linear}
+
+/* ============ LAYOUT ============ */
+#gameMain{
+  position:relative; z-index:2; display:grid; grid-template-columns:minmax(0,1fr) 350px; gap:18px;
+  max-width:1520px; margin:0 auto; padding:16px 18px 30px; align-items:start;
+}
+@media (max-width:1080px){ #gameMain{grid-template-columns:1fr} }
+
+/* ============ BOARD ============ */
+#boardWrap{display:flex; justify-content:center}
+#board{
+  position:relative; width:min(100%, calc(100dvh - 150px)); min-width:320px; aspect-ratio:1/1;
+  display:grid; grid-template-columns:repeat(8,1fr); grid-template-rows:repeat(8,1fr); gap:5px;
+  background:linear-gradient(160deg,#0f2436,#0b1b2a); padding:10px; border-radius:18px;
+  border:1px solid var(--line); box-shadow:0 24px 70px rgba(0,0,0,.5), inset 0 0 60px rgba(53,214,232,.04);
+}
+.tile{
+  position:relative; background:#132c40; border:1px solid rgba(120,200,255,.12); border-radius:8px;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1px;
+  padding:3px 2px; overflow:visible; transition:transform .18s, box-shadow .18s, border-color .18s;
+  animation:tilein .5s both;
+}
+@keyframes tilein{from{opacity:0; transform:scale(.7)}}
+.tile:hover{transform:translateY(-3px) scale(1.04); z-index:30; border-color:var(--gc,var(--cyan));
+  box-shadow:0 8px 22px rgba(0,0,0,.5), 0 0 16px color-mix(in srgb, var(--gc,var(--cyan)) 45%, transparent)}
+.tband{position:absolute; top:0; left:0; right:0; height:6px; border-radius:7px 7px 0 0; background:var(--gc,transparent)}
+.ticon{font-size:clamp(12px,2.3vmin,22px); filter:drop-shadow(0 2px 4px rgba(0,0,0,.5)); margin-top:4px}
+.tname{
+  font-size:clamp(6.5px,.98vmin,10.5px); font-weight:800; text-transform:uppercase; letter-spacing:.3px;
+  text-align:center; line-height:1.05; color:#d9ecf8; max-width:100%;
+}
+.tprice{font-family:'JetBrains Mono',monospace; font-size:clamp(6.5px,.95vmin,10px); color:var(--gc,var(--muted)); font-weight:700}
+.tile.flash{animation:flash .45s}
+@keyframes flash{0%{box-shadow:0 0 0 3px #fff inset,0 0 30px #fff}100%{box-shadow:none}}
+.tile.owned{border-color:var(--oc); box-shadow:inset 0 0 0 1px var(--oc)}
+.ownflag{
+  position:absolute; top:2px; right:2px; width:14px; height:14px; border-radius:4px 4px 4px 0;
+  background:var(--oc); font-size:8px; font-weight:800; display:flex; align-items:center; justify-content:center; color:#081824;
+}
+/* tooltip */
+.tip{
+  position:absolute; z-index:60; width:190px; background:#0a1c2c; border:1px solid var(--gc,var(--cyan));
+  border-radius:10px; padding:9px 11px; font-size:11.5px; line-height:1.45; color:var(--ink);
+  opacity:0; pointer-events:none; transform:translateY(4px); transition:.18s; box-shadow:0 12px 30px rgba(0,0,0,.6);
+}
+.tip b{color:var(--gc,var(--cyan))}
+.tile:hover .tip{opacity:1; transform:translateY(0)}
+.side-b .tip{bottom:calc(100% + 8px); left:50%; margin-left:-95px}
+.side-t .tip{top:calc(100% + 8px); left:50%; margin-left:-95px}
+.side-l .tip{left:calc(100% + 8px); top:0}
+.side-r .tip{right:calc(100% + 8px); top:0}
+
+/* hub tengah */
+#hub{
+  grid-area:2/2/8/8; position:relative; border-radius:14px; overflow:hidden;
+  background:radial-gradient(circle at 50% 42%, #10304a 0%, #0a1e30 68%);
+  border:1px dashed rgba(53,214,232,.25);
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:clamp(6px,1.3vmin,14px); padding:10px;
+}
+#hub::before{
+  content:""; position:absolute; width:130%; height:130%; left:-15%; top:-15%;
+  background:repeating-radial-gradient(circle, transparent 0 34px, rgba(53,214,232,.05) 34px 35px);
+  animation:spin 60s linear infinite; pointer-events:none;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.hublogo{font-family:'Bungee'; font-size:clamp(16px,3.4vmin,34px); letter-spacing:3px; z-index:2;
+  text-shadow:0 0 24px rgba(53,214,232,.55)}
+.hublogo span{color:var(--cyan)}
+.hubturn{z-index:2; display:flex; align-items:center; gap:10px; font-size:clamp(10px,1.6vmin,14px); letter-spacing:1.5px; color:var(--muted); text-transform:uppercase; font-weight:700}
+#hubPlayer{
+  font-family:'Bungee'; font-size:clamp(13px,2.4vmin,22px); padding:4px 16px; border-radius:10px;
+  background:#081824; border:2px solid var(--pc,var(--cyan)); color:var(--pc,var(--cyan));
+  box-shadow:0 0 18px color-mix(in srgb, var(--pc,var(--cyan)) 35%, transparent); animation:ppulse 1.6s infinite;
+}
+@keyframes ppulse{50%{box-shadow:0 0 30px color-mix(in srgb, var(--pc,var(--cyan)) 60%, transparent)}}
+.hubstats{z-index:2; font-family:'JetBrains Mono'; font-size:clamp(9px,1.4vmin,12.5px); color:var(--muted)}
+#hubMsg{z-index:2; min-height:1.3em; font-size:clamp(10px,1.6vmin,14px); color:var(--amber); font-weight:600; text-align:center; padding:0 8px}
+
+/* dadu */
+#dice{
+  z-index:2; width:clamp(44px,8vmin,74px); height:clamp(44px,8vmin,74px); background:#f4faff; border-radius:14px;
+  display:grid; grid-template-columns:repeat(3,1fr); grid-template-rows:repeat(3,1fr); padding:16%; gap:6%;
+  box-shadow:0 8px 20px rgba(0,0,0,.5), inset 0 -4px 0 rgba(0,0,0,.12);
+}
+#dice.rolling{animation:tumble .5s infinite}
+@keyframes tumble{0%{transform:rotate(0) translateY(0)}25%{transform:rotate(8deg) translateY(-7px)}50%{transform:rotate(-6deg)}75%{transform:rotate(5deg) translateY(-4px)}}
+#dice.pop{animation:dpop .3s}
+@keyframes dpop{40%{transform:scale(1.25)}}
+.pip{width:100%; height:100%; border-radius:50%; background:#0d2131; transform:scale(0); transition:transform .1s}
+.pip.on{transform:scale(1)}
+
+/* tombol utama */
+.btn{
+  border:none; border-radius:12px; font-weight:800; letter-spacing:.6px; transition:.18s;
+}
+.btn-primary{
+  font-family:'Bungee'; font-size:clamp(11px,1.8vmin,16px); padding:12px 26px; color:#062028; z-index:2;
+  background:linear-gradient(180deg,var(--cyan),#18a9bd); box-shadow:0 6px 0 #0c6f80, 0 12px 26px rgba(53,214,232,.35);
+}
+.btn-primary:hover:not(:disabled){transform:translateY(-2px); filter:brightness(1.1)}
+.btn-primary:active:not(:disabled){transform:translateY(3px); box-shadow:0 2px 0 #0c6f80}
+.btn-primary:disabled{filter:grayscale(.7); opacity:.55; cursor:not-allowed; box-shadow:none}
+.btn-next{
+  background:linear-gradient(180deg,var(--lime),#7cb518); color:#15230a; box-shadow:0 5px 0 #4d7310,0 10px 22px rgba(163,230,53,.3);
+}
+.btn-next:active{transform:translateY(3px); box-shadow:0 1px 0 #4d7310}
+
+/* token layer */
+#tokenLayer{position:absolute; inset:10px; pointer-events:none; z-index:40}
+.token{
+  position:absolute; width:20px; height:20px; border-radius:50%; border:2.5px solid #fff;
+  transition:left .22s ease, top .22s ease; box-shadow:0 3px 8px rgba(0,0,0,.6), 0 0 12px var(--tc);
+  display:flex; align-items:center; justify-content:center; font-size:9px;
+}
+.token.hop{animation:hop .24s}
+@keyframes hop{50%{transform:translateY(-9px) scale(1.15)}}
+
+/* ============ SIDEBAR ============ */
+#side{display:flex; flex-direction:column; gap:14px}
+.panel{
+  background:linear-gradient(170deg,var(--panel),#0a1a29); border:1px solid var(--line);
+  border-radius:14px; padding:14px;
+}
+.panel h3{font-size:11px; letter-spacing:2.5px; text-transform:uppercase; color:var(--muted); margin-bottom:10px; display:flex; align-items:center; gap:8px}
+.panel h3::after{content:""; flex:1; height:1px; background:var(--line)}
+.prow{
+  display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:10px; margin-bottom:7px;
+  background:rgba(255,255,255,.03); border:1px solid transparent; transition:.2s; position:relative;
+}
+.prow.cur{border-color:var(--pc); background:color-mix(in srgb, var(--pc) 9%, transparent); box-shadow:0 0 14px color-mix(in srgb,var(--pc) 25%, transparent)}
+.pdot{width:14px; height:14px; border-radius:50%; background:var(--pc); box-shadow:0 0 10px var(--pc); flex:none}
+.pname{font-weight:700; font-size:14px; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.pcoins{font-family:'JetBrains Mono'; font-weight:700; color:var(--amber); font-size:13px}
+.pprops{font-size:11px; color:var(--muted)}
+.pstatus{font-size:10px; padding:2px 7px; border-radius:99px; background:rgba(255,93,108,.15); color:#ffb3bb; font-weight:700}
+.banker{
+  display:flex; gap:10px; align-items:center; padding:9px 11px; border-radius:10px;
+  background:rgba(255,197,49,.08); border:1px dashed rgba(255,197,49,.4); font-size:12.5px;
+}
+.banker b{color:var(--amber)}
+#log{max-height:210px; overflow-y:auto; display:flex; flex-direction:column; gap:5px; font-size:12px}
+.logitem{
+  padding:6px 9px; border-radius:8px; background:rgba(255,255,255,.035); border-left:3px solid var(--lc,var(--cyan));
+  animation:slidein .3s both; line-height:1.4;
+}
+.logitem time{font-family:'JetBrains Mono'; font-size:10px; color:var(--muted); margin-right:6px}
+@keyframes slidein{from{opacity:0; transform:translateX(-10px)}}
+.sidebtns{display:flex; gap:8px; flex-wrap:wrap}
+.sidebtns .tbtn{flex:1; text-align:center; min-width:90px}
+
+/* ============ SETUP ============ */
+#setup{position:relative; z-index:2; max-width:1150px; margin:0 auto; padding:34px 20px 60px}
+.setup-top{display:flex; align-items:flex-end; justify-content:space-between; gap:20px; flex-wrap:wrap; margin-bottom:8px}
+.setup-logo .bungee{font-size:clamp(38px,7vw,72px); letter-spacing:4px; line-height:.95;
+  text-shadow:0 0 30px rgba(53,214,232,.5)}
+.setup-logo .bungee b{color:var(--cyan); font-weight:400}
+.setup-logo p{color:var(--muted); letter-spacing:2.5px; text-transform:uppercase; font-size:12px; margin-top:8px}
+.badge{
+  display:inline-block; padding:5px 12px; border-radius:99px; font-size:11px; font-weight:800; letter-spacing:1.5px;
+  background:rgba(163,230,53,.12); border:1px solid rgba(163,230,53,.5); color:var(--lime); margin-bottom:12px;
+}
+#typeline{font-family:'JetBrains Mono'; font-size:12.5px; color:var(--cyan); margin:14px 0 26px; min-height:1.4em}
+#typeline::after{content:"█"; animation:blink 1s infinite}
+.setup-grid{display:grid; grid-template-columns:1.05fr .95fr; gap:22px}
+@media (max-width:900px){.setup-grid{grid-template-columns:1fr}}
+.briefing{background:linear-gradient(170deg,var(--panel),#0a1a29); border:1px solid var(--line); border-radius:16px; padding:22px}
+.briefing h2{font-family:'Bungee'; font-size:17px; letter-spacing:1px; margin-bottom:14px; color:var(--cyan)}
+.rule{display:flex; gap:12px; padding:10px 0; border-bottom:1px dashed rgba(120,200,255,.14); font-size:13.5px; line-height:1.5}
+.rule:last-child{border:none}
+.rule .n{font-family:'Bungee'; color:var(--amber); font-size:15px; flex:none}
+.iconstrip{display:flex; gap:10px; flex-wrap:wrap; margin-top:16px}
+.iconstrip span{
+  padding:6px 11px; border-radius:9px; background:#132c40; border:1px solid var(--line); font-size:12px;
+  animation:floaty 3.4s ease-in-out infinite;
+}
+.iconstrip span:nth-child(2n){animation-delay:.6s}
+.iconstrip span:nth-child(3n){animation-delay:1.2s}
+@keyframes floaty{50%{transform:translateY(-5px)}}
+.formcard{background:linear-gradient(170deg,var(--panel2),#0c2032); border:1px solid var(--line); border-radius:16px; padding:22px; box-shadow:0 24px 60px rgba(0,0,0,.4)}
+.formcard h2{font-family:'Bungee'; font-size:16px; letter-spacing:1px; margin-bottom:16px}
+.flabel{font-size:11px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin:14px 0 6px; font-weight:700}
+input[type=text],input[type=number],select{
+  width:100%; padding:10px 12px; border-radius:10px; border:1px solid var(--line); background:#0a1a29;
+  color:var(--ink); font-family:'Rubik'; font-size:14px; outline:none; transition:.15s;
+}
+input:focus,select:focus{border-color:var(--cyan); box-shadow:0 0 0 3px rgba(53,214,232,.15)}
+.pinputs{display:flex; align-items:center; gap:9px; margin-bottom:8px}
+.pinputs .pdot{width:16px; height:16px}
+.pinputs input{flex:1}
+.pinputs .avatar{width:38px; text-align:center; font-size:19px; background:#0a1a29; border:1px solid var(--line); border-radius:10px; padding:7px 0}
+.seg{display:flex; gap:8px; flex-wrap:wrap}
+.seg button{
+  padding:9px 15px; border-radius:10px; border:1px solid var(--line); background:#0a1a29; color:var(--muted);
+  font-weight:700; font-size:13px; transition:.15s;
+}
+.seg button.on{background:rgba(53,214,232,.15); border-color:var(--cyan); color:var(--cyan)}
+.bigstart{
+  width:100%; margin-top:22px; padding:16px; border:none; border-radius:13px;
+  font-family:'Bungee'; font-size:18px; letter-spacing:2px; color:#062028;
+  background:linear-gradient(180deg,var(--lime),#7cb518); box-shadow:0 7px 0 #4d7310, 0 16px 34px rgba(163,230,53,.3);
+  transition:.18s;
+}
+.bigstart:hover{transform:translateY(-3px); filter:brightness(1.07)}
+.bigstart:active{transform:translateY(3px); box-shadow:0 2px 0 #4d7310}
+
+/* ============ MODAL ============ */
+#overlay{
+  position:fixed; inset:0; z-index:200; background:rgba(4,11,18,.78); backdrop-filter:blur(3px);
+  display:flex; align-items:center; justify-content:center; padding:16px; animation:fadein .2s;
+}
+@keyframes fadein{from{opacity:0}}
+.modal{
+  width:min(560px,100%); max-height:92vh; overflow-y:auto; background:linear-gradient(170deg,#122c42,#0b1c2c);
+  border:1px solid var(--mc,var(--cyan)); border-radius:18px; box-shadow:0 30px 80px rgba(0,0,0,.7), 0 0 40px color-mix(in srgb,var(--mc,var(--cyan)) 20%, transparent);
+  animation:mpop .28s cubic-bezier(.34,1.4,.64,1) both;
+}
+@keyframes mpop{from{opacity:0; transform:scale(.9) translateY(16px)}}
+.mhead{
+  padding:16px 20px; border-bottom:1px solid var(--line); display:flex; align-items:center; gap:14px;
+  background:linear-gradient(180deg, color-mix(in srgb,var(--mc,var(--cyan)) 14%, transparent), transparent);
+}
+.mhead .mico{font-size:34px; filter:drop-shadow(0 3px 6px rgba(0,0,0,.5))}
+.mhead h2{font-family:'Bungee'; font-size:18px; letter-spacing:1px; line-height:1.1}
+.mhead .sub{font-size:11.5px; color:var(--muted); letter-spacing:1.5px; text-transform:uppercase; margin-top:3px}
+.mprice{margin-left:auto; font-family:'JetBrains Mono'; font-weight:700; font-size:17px; color:var(--gold); text-align:right}
+.mprice small{display:block; font-size:9.5px; color:var(--muted); letter-spacing:1px}
+.mbody{padding:18px 20px; font-size:14px; line-height:1.55}
+.reqbox{
+  background:rgba(255,197,49,.07); border:1px dashed rgba(255,197,49,.45); border-radius:11px; padding:11px 13px; margin-bottom:13px;
+}
+.reqbox b{color:var(--amber)}
+.struct{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:11px}
+.spill{font-size:11px; font-weight:800; letter-spacing:.8px; padding:5px 11px; border-radius:99px}
+.spill.idt{background:rgba(53,214,232,.14); color:var(--cyan); border:1px solid rgba(53,214,232,.4)}
+.spill.dsc{background:rgba(176,124,255,.14); color:var(--inf); border:1px solid rgba(176,124,255,.4)}
+.tense{font-size:12.5px; color:var(--lime); margin-bottom:11px}
+.wbank{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px}
+.wchip{
+  font-size:12px; padding:4px 11px; border-radius:99px; background:#0a1a29; border:1px solid var(--line);
+  font-family:'JetBrains Mono'; color:#bfe9ff; transition:.15s;
+}
+.wchip:hover{border-color:var(--cyan); transform:translateY(-2px)}
+details{background:#0a1a29; border:1px solid var(--line); border-radius:10px; padding:9px 13px; font-size:13px}
+summary{cursor:pointer; font-weight:700; color:var(--muted); font-size:12.5px}
+details p{margin-top:8px; color:#c9e6f5; font-style:italic}
+.mfoot{padding:15px 20px 20px; border-top:1px solid var(--line)}
+.bnote{font-size:12px; color:var(--muted); margin-bottom:10px}
+.bnote b{color:var(--amber)}
+.mactions{display:flex; gap:10px; flex-wrap:wrap}
+.mbtn{
+  flex:1; min-width:150px; padding:13px 14px; border-radius:11px; border:none; font-weight:800; font-size:13.5px;
+  letter-spacing:.3px; transition:.16s;
+}
+.mbtn:hover:not(:disabled){transform:translateY(-2px)}
+.mbtn:disabled{opacity:.45; cursor:not-allowed}
+.mbtn.ok{background:linear-gradient(180deg,var(--lime),#7cb518); color:#15230a; box-shadow:0 4px 0 #4d7310}
+.mbtn.no{background:#1a3348; color:#ffb3bb; border:1px solid rgba(255,93,108,.4)}
+.mbtn.mid{background:linear-gradient(180deg,var(--amber),#d99a0c); color:#2a1e00; box-shadow:0 4px 0 #8a6403}
+.mbtn.ghost{background:#0a1a29; color:var(--muted); border:1px solid var(--line); flex:0 0 auto}
+textarea{
+  width:100%; min-height:90px; padding:11px 13px; border-radius:10px; border:1px solid var(--line);
+  background:#0a1a29; color:var(--ink); font-family:'Rubik'; font-size:13.5px; resize:vertical; outline:none; line-height:1.5;
+}
+textarea:focus{border-color:var(--cyan)}
+.cardq{
+  background:#0a1a29; border-left:4px solid var(--mc,var(--cyan)); border-radius:0 11px 11px 0;
+  padding:13px 15px; font-size:15px; font-weight:600; line-height:1.55; margin-bottom:13px; white-space:pre-line;
+}
+.cbadge{font-size:10px; font-weight:800; letter-spacing:2px; padding:4px 10px; border-radius:99px; text-transform:uppercase}
+.keybox{
+  background:rgba(163,230,53,.07); border:1px dashed rgba(163,230,53,.45); border-radius:11px; padding:11px 13px;
+  font-size:13px; margin:12px 0; color:#dff3c0; white-space:pre-line; animation:slidein .3s both;
+}
+.flipin{animation:flipin .5s both}
+@keyframes flipin{from{transform:rotateX(-70deg); opacity:0}}
+
+/* drawer bank kata */
+#drawer{
+  position:fixed; top:0; right:-400px; width:min(380px,92vw); height:100vh; z-index:210; overflow-y:auto;
+  background:linear-gradient(180deg,#0f2436,#0a1a29); border-left:1px solid var(--cyan);
+  box-shadow:-20px 0 60px rgba(0,0,0,.6); transition:right .3s cubic-bezier(.2,.8,.2,1); padding:20px;
+}
+#drawer.open{right:0}
+#drawer h2{font-family:'Bungee'; font-size:17px; letter-spacing:1px; margin-bottom:4px}
+#drawer .dclose{float:right; background:none; border:1px solid var(--line); color:var(--ink); width:32px; height:32px; border-radius:9px; font-size:15px}
+#drawer h4{font-size:11px; letter-spacing:2px; text-transform:uppercase; color:var(--cyan); margin:18px 0 8px}
+.adjrow{display:flex; justify-content:space-between; padding:6px 9px; border-radius:8px; font-size:13px; border-bottom:1px dashed rgba(120,200,255,.1)}
+.adjrow .mono{color:var(--amber)}
+.starter{display:block; padding:6px 10px; margin-bottom:6px; background:#0a1a29; border:1px solid var(--line); border-radius:8px; font-size:13px; font-family:'JetBrains Mono'; color:#bfe9ff}
+.gstruct{display:flex; flex-direction:column; gap:8px}
+.gstruct div{padding:10px 12px; border-radius:10px; font-size:12.5px; line-height:1.5}
+.gstruct .g1{background:rgba(53,214,232,.1); border:1px solid rgba(53,214,232,.4)}
+.gstruct .g2{background:rgba(176,124,255,.1); border:1px solid rgba(176,124,255,.4)}
+
+/* asesmen */
+.asgrid{width:100%; border-collapse:collapse; font-size:12.5px}
+.asgrid th{font-size:10px; letter-spacing:1px; color:var(--muted); text-transform:uppercase; padding:6px 5px; text-align:center}
+.asgrid td{padding:8px 5px; border-top:1px solid var(--line); text-align:center}
+.asgrid td:first-child{text-align:left; font-weight:700}
+.scorebtn{
+  width:27px; height:27px; border-radius:8px; border:1px solid var(--line); background:#0a1a29; color:var(--muted);
+  font-weight:800; font-size:12px; margin:0 1.5px; transition:.13s;
+}
+.scorebtn:hover{border-color:var(--cyan)}
+.scorebtn.on{background:var(--cyan); color:#062028; border-color:var(--cyan); box-shadow:0 0 10px rgba(53,214,232,.5)}
+.astotal{font-family:'JetBrains Mono'; font-weight:700; color:var(--amber)}
+
+/* hasil akhir */
+.rankrow{display:flex; align-items:center; gap:12px; padding:11px 13px; border-radius:12px; margin-bottom:9px; background:rgba(255,255,255,.04); border:1px solid var(--line)}
+.rankrow.r1{border-color:var(--gold); background:rgba(255,209,102,.09); box-shadow:0 0 20px rgba(255,209,102,.18)}
+.rankpos{font-family:'Bungee'; font-size:19px; width:34px}
+.rankrow .rn{flex:1; font-weight:700}
+.rankrow .rv{font-family:'JetBrains Mono'; font-size:12.5px; color:var(--muted)}
+.rankrow .rv b{color:var(--amber); font-size:14px}
+
+/* toast & confetti */
+#toasts{position:fixed; top:74px; left:50%; transform:translateX(-50%); z-index:300; display:flex; flex-direction:column; gap:8px; align-items:center; pointer-events:none}
+.toast{
+  background:#0d2436; border:1px solid var(--cyan); color:var(--ink); padding:10px 20px; border-radius:99px;
+  font-weight:700; font-size:13.5px; box-shadow:0 10px 30px rgba(0,0,0,.5), 0 0 18px rgba(53,214,232,.25);
+  animation:toastin .3s both;
+}
+@keyframes toastin{from{opacity:0; transform:translateY(-14px) scale(.9)}}
+.toast.out{opacity:0; transform:translateY(-10px); transition:.4s}
+.cf{position:fixed; top:-20px; z-index:400; width:10px; height:14px; animation:fall linear forwards; pointer-events:none}
+@keyframes fall{to{transform:translateY(105vh) rotate(720deg)}}
+@media (max-width:640px){
+  .logo .bungee{font-size:19px}
+  #gameMain{padding:10px}
+}
+</style>
+</head>
+<body>
+
+<!-- jejak PCB ambient -->
+<svg id="traces" viewBox="0 0 1400 900" preserveAspectRatio="xMidYMid slice">
+  <g stroke="rgba(53,214,232,.09)" stroke-width="1.5" fill="none">
+    <path d="M-50,120 H300 L360,180 H700 L760,120 H1450"/>
+    <path d="M-50,760 H240 L300,700 H640 L700,760 H1100 L1160,700 H1450"/>
+    <path d="M1250,-50 V220 L1190,280 V600 L1250,660 V950"/>
+    <path d="M120,-50 V160 L180,220 V520"/>
+  </g>
+  <g fill="rgba(53,214,232,.14)">
+    <circle cx="360" cy="180" r="4"/><circle cx="760" cy="120" r="4"/><circle cx="300" cy="700" r="4"/>
+    <circle cx="1190" cy="280" r="4"/><circle cx="180" cy="220" r="4"/><circle cx="120" cy="520" r="4"/>
+  </g>
+  <circle r="4" fill="#35d6e8" opacity=".7"><animateMotion dur="11s" repeatCount="indefinite" path="M-50,120 H300 L360,180 H700 L760,120 H1450"/></circle>
+  <circle r="3.5" fill="#a3e635" opacity=".6"><animateMotion dur="15s" repeatCount="indefinite" path="M1450,760 H1100 L1160,700 H700 L640,760 H240 L300,700 H-50"/></circle>
+  <circle r="3" fill="#ffd166" opacity=".55"><animateMotion dur="18s" repeatCount="indefinite" path="M1250,950 V660 L1190,600 V280 L1250,220 V-50"/></circle>
+</svg>
+
+<div id="toasts"></div>
+<div id="modalRoot"></div>
+
+<!-- ============ DRAWER BANK KATA ============ -->
+<div id="drawer">
+  <button class="dclose" onclick="toggleDrawer(false)">✕</button>
+  <h2>📚 BANK KATA</h2>
+  <p style="font-size:12px;color:var(--muted)">Amunisi descriptive text untuk semua pemain &amp; banker.</p>
+  <h4>⚡ Adjectives (kata sifat)</h4>
+  <div id="adjList"></div>
+  <h4>🧱 Sentence Starters</h4>
+  <span class="starter">It is a / an …</span>
+  <span class="starter">It has …</span>
+  <span class="starter">It connects / sends / stores …</span>
+  <span class="starter">This device / tool / room …</span>
+  <span class="starter">We use it to / for …</span>
+  <h4>🏗️ Generic Structure</h4>
+  <div class="gstruct">
+    <div class="g1"><b>1 · IDENTIFICATION</b> — kenalkan objeknya.<br><i>"A router is a network device."</i></div>
+    <div class="g2"><b>2 · DESCRIPTION</b> — ciri, fungsi, bentuk.<br><i>"It connects two networks. It is fast and wireless."</i></div>
+  </div>
+  <h4>🔧 Simple Present Tense</h4>
+  <div style="font-size:12.5px;line-height:1.9">
+    • It <b class="mono" style="color:var(--lime)">is</b> a small device.<br>
+    • It <b class="mono" style="color:var(--lime)">has</b> eight pins.<br>
+    • A switch <b class="mono" style="color:var(--lime)">connect<b style="color:var(--red)">s</b></b> many computers. <span style="color:var(--muted)">(pakai -s/-es)</span><br>
+    • They <b class="mono" style="color:var(--lime)">carry</b> data every day.
+  </div>
+</div>
+
+<!-- ============ SETUP ============ -->
+<section id="setup">
+  <div class="setup-top">
+    <div class="setup-logo">
+      <span class="badge">SMK KELAS X · TKJ · FASE E · DESCRIPTIVE TEXT</span>
+      <div class="bungee">MONO<b>TECH</b></div>
+      <p>Monopoli Descriptive Text — kuasai properti teknologi TKJ!</p>
+    </div>
+    <div style="font-size:60px;animation:floaty 3s ease-in-out infinite">🎲</div>
+  </div>
+  <div id="typeline" class="mono"></div>
+  <div class="setup-grid">
+    <div class="briefing">
+      <h2>📋 BRIEFING MISI</h2>
+      <div class="rule"><span class="n">01</span><span><b>Tim 4–5 siswa:</b> 1 orang jadi <b>Banker</b> (verifikasi deskripsi, kelola uang &amp; kartu), sisanya pemain aktif yang melempar dadu searah jarum jam.</span></div>
+      <div class="rule"><span class="n">02</span><span><b>Beli properti TKJ</b> (Router, Server, Lab…) hanya jika kamu bisa <b>mendeskripsikannya lisan</b> min. 3 kalimat: <i>Identification + Description</i>, pakai Simple Present Tense.</span></div>
+      <div class="rule"><span class="n">03</span><span><b>Kena sewa?</b> Diskon 50% kalau kamu bisa menyebut <b>2 adjectives</b> yang tepat untuk properti itu. 💸→💰</span></div>
+      <div class="rule"><span class="n">04</span><span><b>Challenge Cards:</b> tulis/perbaiki teks deskriptif → benar dapat bonus koin, salah kena denda. <b>Rest Area:</b> istirahat 1 putaran, kecuali menulis paragraf <i>"My Ideal Computer Laboratory"</i>.</span></div>
+      <div class="rule"><span class="n">05</span><span><b>Menang:</b> properti TKJ terbanyak + Tech Coins tersisa saat waktu habis (30–45 menit). Guru menilai: Language Features, Generic Structure, Fluency &amp; Collaboration.</span></div>
+      <div class="iconstrip">
+        <span>📡 Router</span><span>🔀 Switch</span><span>🖥️ Server</span><span>✨ Fiber Optic</span>
+        <span>🧪 Network Lab</span><span>☁️ Cloud</span><span>🛠️ Crimp Tool</span><span>🗄️ Data Center</span>
+      </div>
+    </div>
+    <div class="formcard">
+      <h2>⚙️ SETUP KELOMPOK</h2>
+      <div class="flabel">Nama Kelompok</div>
+      <input type="text" id="groupName" placeholder="cth: TKJ-1 Group Garuda" value="">
+      <div class="flabel">Jumlah Pemain Aktif</div>
+      <div class="seg" id="countSeg">
+        <button data-n="2">2 Pemain</button>
+        <button data-n="3" class="on">3 Pemain</button>
+        <button data-n="4">4 Pemain</button>
+      </div>
+      <p style="font-size:11.5px;color:var(--muted);margin-top:6px">Ketentuan: 4–5 siswa/kelompok → 1 banker + 3–4 pemain aktif.</p>
+      <div class="flabel">Identitas Pemain</div>
+      <div id="playerInputs"></div>
+      <div class="flabel">🏦 Nama Banker <span style="text-transform:none;letter-spacing:0">(verifikasi deskripsi & transaksi)</span></div>
+      <input type="text" id="bankerName" placeholder="cth: Rara (Banker)">
+      <div class="flabel">Durasi Permainan</div>
+      <div class="seg" id="timeSeg">
+        <button data-t="30" class="on">⏱ 30 mnt</button>
+        <button data-t="40">⏱ 40 mnt</button>
+        <button data-t="45">⏱ 45 mnt</button>
+      </div>
+      <button class="bigstart" onclick="startGame()">▶ MULAI PERMAINAN</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ GAME ============ -->
+<div id="gameScreen" hidden>
+  <header id="topbar">
+    <div class="logo">
+      <span class="bungee">MONO<b>TECH</b></span>
+      <small>Descriptive Text · TKJ Fase E</small>
+    </div>
+    <div class="topchips">
+      <span class="chip" id="grpChip">👥 —</span>
+      <span class="chip mono">⏱ <b id="timerTxt">30:00</b></span>
+      <span class="chip">RONDE <b id="roundTxt">1</b></span>
+      <span class="chip"><span class="dot"></span> LIVE</span>
+      <button class="tbtn" id="pauseBtn" onclick="togglePause()">⏸ Jeda</button>
+      <button class="tbtn" onclick="openAssess()">📝 Penilaian</button>
+      <button class="tbtn" onclick="toggleDrawer(true)">📚 Bank Kata</button>
+      <button class="tbtn" onclick="openHelp()">📖 Panduan</button>
+      <button class="tbtn danger" onclick="confirmEnd()">🏁 Akhiri</button>
+    </div>
+    <div id="timebar"></div>
+  </header>
+
+  <main id="gameMain">
+    <div id="boardWrap">
+      <div id="board">
+        <div id="hub">
+          <div class="hublogo">MONO<span>TECH</span></div>
+          <div class="hubturn">GILIRAN <span id="hubPlayer">—</span></div>
+          <div id="dice"></div>
+          <button class="btn btn-primary" id="rollBtn" onclick="onRoll()">🎲 LEMPAR DADU</button>
+          <div id="hubMsg">Pemain dengan dadu tertinggi jalan duluan!</div>
+          <div class="hubstats mono" id="hubStats"></div>
+        </div>
+        <div id="tokenLayer"></div>
+      </div>
+    </div>
+
+    <aside id="side">
+      <div class="panel">
+        <h3>🎮 Pemain</h3>
+        <div id="playerList"></div>
+        <div class="banker">🏦 <span>Banker: <b id="bankerTxt">—</b> — penjaga kartu, uang &amp; verifier deskripsi.</span></div>
+      </div>
+      <div class="panel">
+        <h3>📜 Log Jaringan</h3>
+        <div id="log"></div>
+      </div>
+      <div class="panel">
+        <h3>⚡ Kontrol Cepat</h3>
+        <div class="sidebtns">
+          <button class="tbtn" onclick="toggleDrawer(true)">📚 Bank Kata</button>
+          <button class="tbtn" onclick="openAssess()">📝 Nilai Siswa</button>
+          <button class="tbtn" onclick="openHelp()">📖 Aturan</button>
+        </div>
+        <p style="font-size:11px;color:var(--muted);margin-top:10px">💡 Tekan <span class="mono">SPASI</span> untuk lempar dadu saat giliranmu siap.</p>
+      </div>
+    </aside>
+  </main>
+</div>
+
+<script>
+/* ================= DATA ================= */
+const GROUPS={
+  dev:{name:'Network Devices',hex:'#38d1e0'},
+  tool:{name:'Basic Tools',hex:'#ff9f43'},
+  cab:{name:'Cabling',hex:'#3ddc84'},
+  inf:{name:'Lab & Facilities',hex:'#b07cff'},
+  gold:{name:'Premium Tech',hex:'#ffd166'}
+};
+const P=(name,group,price,rent,icon,adj,ex)=>({type:'prop',name,group,price,rent,icon,adj,ex});
+const TILES=[
+ {type:'start',name:'START',icon:'🚀'},
+ P('Router','dev',60,12,'📡',['smart','wireless','fast'],'A router is a smart network device. It connects two or more networks. It sends data packets to the right destination.'),
+ {type:'ch',name:'Challenge',icon:'❓'},
+ P('Switch Hub','dev',70,14,'🔀',['wired','reliable','compact'],'A switch hub is a reliable wired device. It connects many computers in a LAN. It sends data only to the target port.'),
+ P('Access Point','dev',80,16,'📶',['wireless','small','modern'],'An access point is a small wireless device. It broadcasts a Wi-Fi signal. It lets gadgets join the network without cables.'),
+ {type:'rest',name:'Rest Area',icon:'☕'},
+ P('Crimping Tool','tool',100,18,'🛠️',['handy','manual','useful'],'A crimping tool is a handy manual tool. It locks an RJ-45 connector onto a UTP cable. It is essential for network technicians.'),
+ P('LAN Tester','tool',100,18,'🔍',['small','digital','practical'],'A LAN tester is a small digital device. It checks UTP cable connections. Its lights blink when the cable works.'),
+ P('RJ-45 Connector','tool',110,20,'🔌',['tiny','plastic','cheap'],'An RJ-45 connector is a tiny plastic plug. It has eight golden pins. It joins a UTP cable to a network port.'),
+ {type:'ch',name:'Challenge',icon:'❓'},
+ P('UTP Cable','cab',130,22,'〰️',['flexible','thin','colorful'],'A UTP cable is a flexible copper cable. It has eight colorful wires inside. It carries data in a local network.'),
+ P('Fiber Optic Cable','cab',150,24,'✨',['thin','fast','fragile'],'A fiber optic cable is a thin glass cable. It sends data as pulses of light. It is very fast and reliable.'),
+ P('Server','dev',160,26,'🖥️',['powerful','expensive','fast'],'A server is a powerful computer. It stores data and serves client requests. It runs day and night.'),
+ {type:'ch',name:'Challenge',icon:'❓'},
+ P('Server Room','inf',180,28,'🗄️',['cold','secure','noisy'],'The server room is a secure and cold room. It keeps many servers running. Only authorized technicians enter it.'),
+ P('Network Lab','inf',170,26,'🧪',['modern','tidy','comfortable'],'The network lab is a modern classroom. It has computers, cables, and testing tools. Students practice networking there.'),
+ {type:'boost',name:'Bandwidth Boost',icon:'📈'},
+ P('Mikrotik Station','inf',190,30,'🎛️',['advanced','popular','powerful'],'The Mikrotik station is an advanced hotspot area. It manages bandwidth and user logins. It is popular in Indonesian schools.'),
+ {type:'ch',name:'Challenge',icon:'❓'},
+ P('Cloud Station','inf',220,32,'☁️',['virtual','remote','massive'],'The cloud computing station is a virtual service area. It offers online storage and computing power. Users access it through the internet.'),
+ P('Modem','dev',140,22,'📟',['compact','digital','essential'],'A modem is a compact digital device. It converts digital and analog signals. It brings the internet into a home.'),
+ {type:'rest',name:'Rest Area',icon:'☕'},
+ P('Data Center','gold',280,38,'🏢',['huge','secure','powerful'],'The data center is a huge secure building. It stores thousands of servers. It protects important digital data.'),
+ {type:'ch',name:'Challenge',icon:'❓'},
+ P('NAS Storage','gold',260,36,'💾',['reliable','large','secure'],'A NAS storage is a reliable storage box. It keeps files safe on a network. Many users access it together.'),
+ {type:'tax',name:'Maintenance Lab',icon:'🔧'},
+ P('Fiber Optic Corner','inf',200,30,'🔬',['tidy','careful','clean'],'The fiber optic corner is a tidy work area. Technicians splice thin glass cables there. It needs careful and clean hands.'),
+ {type:'ch',name:'Challenge',icon:'❓'}
+];
+const CARDTYPES={describe:['✍️ DESCRIBE IT','#35d6e8'],fix:['🔧 FIX THE GRAMMAR','#ff9f43'],vocab:['💡 VOCABULARY','#3ddc84'],structure:['🧩 STRUCTURE','#b07cff']};
+const CARDS=[
+ {t:'describe',q:'Describe a FIBER OPTIC CABLE in maximum 30 words!',k:'Contoh: A fiber optic cable is a thin, flexible cable. It is made of glass. It sends data as light, very fast.'},
+ {t:'describe',q:'Describe a ROUTER in 2 sentences using Simple Present Tense!',k:'Contoh: A router is a smart network device. It connects different networks and sends data packets.'},
+ {t:'describe',q:'Describe an ACCESS POINT. Use at least 2 adjectives!',k:'Contoh: An access point is a small wireless device. It broadcasts the Wi-Fi signal to laptops and phones.'},
+ {t:'describe',q:'Describe your school NETWORK LAB in 3 sentences!',k:'Contoh: Our network lab is a modern room. It has many computers and cables. It is clean and comfortable.'},
+ {t:'describe',q:'Describe a CRIMPING TOOL in 2 sentences!',k:'Contoh: A crimping tool is a handy manual tool. It joins an RJ-45 connector to a UTP cable.'},
+ {t:'describe',q:'Make one IDENTIFICATION sentence about a LAN TESTER!',k:'Contoh: A LAN tester is a small handheld device for checking network cables.'},
+ {t:'fix',q:'Fix the error:\n"A server are a computer that store data."',k:'A server IS a computer that STORES data.'},
+ {t:'fix',q:'Fix the error:\n"The router have two antenna and it very fast."',k:'The router HAS two ANTENNAS and it IS very fast.'},
+ {t:'fix',q:'Fix the error:\n"Fiber optic cable is make from glass."',k:'Fiber optic cable IS MADE from glass.'},
+ {t:'fix',q:'Fix the error:\n"A switch connect many computer in a LAN."',k:'A switch CONNECTS many COMPUTERS in a LAN.'},
+ {t:'fix',q:'Fix the error:\n"An access point broadcast wifi signal to many device."',k:'An access point BROADCASTS Wi-Fi SIGNALS to many DEVICES.'},
+ {t:'vocab',q:'Mention 3 adjectives to describe a SERVER!',k:'Contoh: powerful, fast, reliable, modern, expensive, big.'},
+ {t:'vocab',q:'Mention 3 adjectives to describe a FIBER OPTIC CABLE!',k:'Contoh: thin, flexible, fast, fragile, expensive.'},
+ {t:'vocab',q:'Mention 3 things you can find inside a NETWORK LAB!',k:'Contoh: computers, cables, switches, routers, crimping tools, LAN testers.'},
+ {t:'structure',q:'Which sentence is IDENTIFICATION and which is DESCRIPTION?\n1) "This is a modem."\n2) "It converts digital signals into analog signals."',k:'Kalimat 1 = Identification (pengenalan objek).\nKalimat 2 = Description (ciri/fungsi objek).'},
+ {t:'structure',q:'Rearrange into a good descriptive text:\nA) "It has eight pins."\nB) "This is an RJ-45 connector."',k:'Urutan benar: B dulu (Identification), lalu A (Description).'}
+];
+const ADJBANK=[['fast','cepat'],['reliable','andal'],['modern','modern'],['digital','digital'],['wireless','nirkabel'],['portable','mudah dibawa'],['compact','ringkas'],['powerful','bertenaga'],['secure','aman'],['thin','tipis'],['flexible','lentur'],['expensive','mahal'],['cheap','murah'],['advanced','canggih'],['tiny','mungil'],['huge','raksasa']];
+const PAVATARS=['🖥️','💻','📱','🎧'];
+const PCOLORS=['#35d6e8','#a3e635','#ffc531','#ff6b81'];
+const PIPS={1:[4],2:[0,8],3:[0,4,8],4:[0,2,6,8],5:[0,2,4,6,8],6:[0,2,3,5,6,8]};
+
+/* ================= UTIL ================= */
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+const fmtT=s=>`${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
+function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function toast(msg,ms=2400){const t=document.createElement('div');t.className='toast';t.innerHTML=msg;$('#toasts').appendChild(t);setTimeout(()=>t.classList.add('out'),ms);setTimeout(()=>t.remove(),ms+450);}
+function log(msg,color){const d=document.createElement('div');d.className='logitem';d.style.setProperty('--lc',color||'var(--cyan)');d.innerHTML=`<time>${fmtT(S?S.cfg.sec-S.timeLeft:S.cfg?S.cfg.sec:0)}</time>${msg}`;const L=$('#log');L.prepend(d);while(L.children.length>40)L.lastChild.remove();}
+
+/* ================= SETUP ================= */
+let setupN=3, setupTime=30;
+function typeLine(el,txt){let i=0;const iv=setInterval(()=>{el.textContent=txt.slice(0,++i);if(i>=txt.length)clearInterval(iv);},26);}
+typeLine($('#typeline'),'> booting monotech.sys … loading descriptive-text module … NETWORK LAB READY_');
+$('#adjList').innerHTML=ADJBANK.map(([en,id])=>`<div class="adjrow"><span class="mono">${en}</span><span style="color:var(--muted)">${id}</span></div>`).join('');
+function segWire(id,cb){$(id).addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;$$(id+' button').forEach(x=>x.classList.remove('on'));b.classList.add('on');cb(b);});}
+segWire('#countSeg',b=>{setupN=+b.dataset.n;renderPInputs();});
+segWire('#timeSeg',b=>{setupTime=+b.dataset.t;});
+function renderPInputs(){
+  let h='';
+  for(let i=0;i<setupN;i++){
+    const old=$('#playerInputs').children[i]?.querySelector('input')?.value||'';
+    h+=`<div class="pinputs"><span class="pdot" style="--pc:${PCOLORS[i]};background:${PCOLORS[i]}"></span>
+        <input type="text" placeholder="Nama Pemain ${i+1}" value="${old}"><span class="avatar">${PAVATARS[i]}</span></div>`;
+  }
+  $('#playerInputs').innerHTML=h;
+}
+renderPInputs();
+
+/* ================= STATE ================= */
+let S=null, tileEls=[], tokenEls=[];
+function tilePos(i){
+  if(i<=7)return{r:8,c:8-i};
+  if(i<=14)return{r:8-(i-7),c:1};
+  if(i<=21)return{r:1,c:i-13};
+  return{r:i-20,c:8};
+}
+function tileSide(i){return i<=7?'b':i<=14?'l':i<=21?'t':'r';}
+
+function startGame(){
+  const names=$$('#playerInputs input').map(x=>x.value.trim());
+  const players=[];
+  for(let i=0;i<setupN;i++)players.push({id:i,name:names[i]||('Pemain '+(i+1)),color:PCOLORS[i],avatar:PAVATARS[i],pos:0,coins:1000,props:[],resting:false});
+  S={cfg:{group:$('#groupName').value.trim()||'Kelompok TKJ',banker:$('#bankerName').value.trim()||'Banker',sec:setupTime*60},
+     players,cur:0,round:1,phase:'ready',owner:{},deck:shuffle(CARDS),timeLeft:setupTime*60,paused:false,
+     scores:players.map(()=>[0,0,0,0]),restText:'',ended:false,timer:null};
+  $('#setup').hidden=true;$('#gameScreen').hidden=false;
+  $('#grpChip').textContent='👥 '+S.cfg.group;$('#bankerTxt').textContent=S.cfg.banker;
+  buildBoard();buildTokens();renderPlayers();renderDice(6);updateHUD();
+  log(`🎮 Permainan dimulai! <b>${S.cfg.group}</b> — semua pemain dapat <b>1000 TC</b>.`,'var(--lime)');
+  log(`🎯 Tentukan siapa dadu tertinggi → jalan duluan. Klik LEMPAR DADU!`);
+  startTimer();
+}
+
+/* ================= BOARD ================= */
+function tipFor(t){
+  if(t.type==='prop')return `<b>${t.name}</b> · ${GROUPS[t.group].name}<br>Harga ${t.price} TC · Sewa ${t.rent} TC<br><span style="color:var(--muted)">adj: ${t.adj.join(', ')}</span>`;
+  const M={start:'Lewati atau singgah → ambil <b>200 TC</b> dari Bank.',ch:'Ambil <b>Challenge Card</b>: tulis/perbaiki descriptive text. Benar +60 TC, salah −30 TC.',rest:'Istirahat 1 putaran, kecuali menulis paragraf <b>"My Ideal Computer Laboratory"</b>.',boost:'Sinyal penuh! Terima bonus <b>+30 TC</b>.',tax:'Perawatan alat lab. Bayar <b>60 TC</b> ke Bank.'};
+  return `<b>${t.name}</b><br>${M[t.type]}`;
+}
+function buildBoard(){
+  const board=$('#board');
+  board.querySelectorAll('.tile').forEach(e=>e.remove());
+  tileEls=[];
+  TILES.forEach((t,i)=>{
+    const p=tilePos(i), g=t.group?GROUPS[t.group]:null;
+    const el=document.createElement('div');
+    el.className=`tile side-${tileSide(i)}`;
+    el.style.cssText=`grid-row:${p.r};grid-column:${p.c};--gc:${g?g.hex:t.type==='start'?'#ffd166':t.type==='ch'?'#35d6e8':t.type==='rest'?'#ff5d6c':t.type==='boost'?'#a3e635':'#8fb0c4'};animation-delay:${i*0.02}s`;
+    el.dataset.i=i;
+    el.innerHTML=`<span class="tband"></span><div class="ticon">${t.icon}</div>
+      <div class="tname">${t.name}</div>
+      ${t.type==='prop'?`<div class="tprice">${t.price} TC</div>`:`<div class="tprice">${{start:'+200',ch:'±TC',rest:'SKIP',boost:'+30',tax:'-60'}[t.type]}</div>`}
+      <div class="ownflag" hidden></div><div class="tip">${tipFor(t)}</div>`;
+    board.insertBefore(el,$('#hub'));
+    tileEls[i]=el;
+  });
+}
+function buildTokens(){
+  const L=$('#tokenLayer');L.innerHTML='';tokenEls=[];
+  S.players.forEach(p=>{
+    const t=document.createElement('div');
+    t.className='token';t.style.setProperty('--tc',p.color);t.style.background=`radial-gradient(circle at 32% 30%, #fff3, transparent 55%), ${p.color}`;
+    t.textContent=p.avatar;L.appendChild(t);tokenEls[p.id]=t;
+  });
+  placeTokens();
+}
+function tileCenter(i){
+  const b=$('#board').getBoundingClientRect(), r=tileEls[i].getBoundingClientRect();
+  return{x:r.left-b.left+r.width/2-10,y:r.top-b.top+r.height/2-10};
+}
+function placeTokens(hop){
+  const byPos={};
+  S.players.forEach(p=>{(byPos[p.pos]=byPos[p.pos]||[]).push(p);});
+  S.players.forEach(p=>{
+    const grp=byPos[p.pos], idx=grp.indexOf(p);
+    const c=tileCenter(p.pos);
+    const ox=(idx-(grp.length-1)/2)*13, oy=idx%2? -7:7;
+    const t=tokenEls[p.id];
+    t.style.left=(c.x+ox)+'px'; t.style.top=(c.y+oy)+'px';
+    if(hop){t.classList.remove('hop');void t.offsetWidth;t.classList.add('hop');}
+  });
+}
+window.addEventListener('resize',()=>{if(S&&!S.ended)placeTokens();});
+
+/* ================= HUD ================= */
+function renderDice(v){
+  const d=$('#dice');d.innerHTML='';
+  for(let i=0;i<9;i++){const s=document.createElement('span');s.className='pip'+(PIPS[v].includes(i)?' on':'');d.appendChild(s);}
+}
+async function animateDice(){
+  const d=$('#dice');d.classList.add('rolling');
+  for(let k=0;k<9;k++){renderDice(1+Math.floor(Math.random()*6));await wait(62);}
+  d.classList.remove('rolling');
+  const v=1+Math.floor(Math.random()*6);
+  renderDice(v);d.classList.add('pop');setTimeout(()=>d.classList.remove('pop'),320);
+  return v;
+}
+function renderPlayers(){
+  $('#playerList').innerHTML=S.players.map(p=>`
+    <div class="prow ${p.id===S.cur?'cur':''}" style="--pc:${p.color}">
+      <span class="pdot" style="--pc:${p.color}"></span>
+      <span style="font-size:16px">${p.avatar}</span>
+      <span class="pname">${p.name}</span>
+      ${p.resting?'<span class="pstatus">☕ REST</span>':''}
+      <span class="pprops">🏠 ${p.props.length}</span>
+      <span class="pcoins" id="coins-${p.id}">${p.coins} TC</span>
+    </div>`).join('');
+}
+function updateHUD(){
+  const p=S.players[S.cur];
+  const hp=$('#hubPlayer');hp.textContent=p.name;hp.style.setProperty('--pc',p.color);
+  $('#roundTxt').textContent=S.round;
+  $('#hubStats').textContent=`${p.avatar} ${p.name} · petak #${p.pos} · 🏠 ${p.props.length} properti · ${p.coins} TC`;
+  const btn=$('#rollBtn');
+  if(S.phase==='ready'){btn.disabled=false;btn.className='btn btn-primary';btn.innerHTML='🎲 LEMPAR DADU';}
+  else if(S.phase==='resolved'){btn.disabled=false;btn.className='btn btn-primary btn-next';btn.innerHTML='➤ GILIRAN BERIKUTNYA';}
+  else{btn.disabled=true;btn.className='btn btn-primary';btn.innerHTML=S.phase==='moving'?'⏳ BERJALAN…':'⏳ SELESAIKAN DULU…';}
+  renderPlayers();
+}
+function hubMsg(t){$('#hubMsg').innerHTML=t;}
+
+/* ================= TIMER ================= */
+function startTimer(){
+  tick();
+  S.timer=setInterval(tick,1000);
+}
+function tick(){
+  if(S.paused||S.ended)return;
+  S.timeLeft--;
+  $('#timerTxt').textContent=fmtT(Math.max(0,S.timeLeft));
+  $('#timebar').style.width=(S.timeLeft/S.cfg.sec*100)+'%';
+  if(S.timeLeft===300)toast('⏰ Sisa 5 menit! Kejar properti!');
+  if(S.timeLeft<=0){endGame('waktu');}
+}
+function togglePause(){
+  S.paused=!S.paused;
+  $('#pauseBtn').innerHTML=S.paused?'▶ Lanjut':'⏸ Jeda';
+  toast(S.paused?'⏸ Game dijeda (timer berhenti)':'▶ Lanjut!');
+}
+
+/* ================= TURN FLOW ================= */
+async function onRoll(){
+  if(!S||S.ended)return;
+  if(S.phase==='resolved'){nextTurn();return;}
+  if(S.phase!=='ready')return;
+  S.phase='moving';updateHUD();
+  const p=S.players[S.cur];
+  const v=await animateDice();
+  log(`🎲 <b style="color:${p.color}">${p.name}</b> melempar dadu → <b>${v}</b>`,p.color);
+  hubMsg(`${p.avatar} ${p.name} melangkah ${v} petak…`);
+  await moveSteps(v);
+  await onLand();
+}
+async function moveSteps(n){
+  const p=S.players[S.cur];
+  for(let k=0;k<n;k++){
+    p.pos=(p.pos+1)%28;
+    if(p.pos===0){p.coins+=200;log(`🚀 <b>${p.name}</b> melewati START → <b>+200 TC</b>!`,'#ffd166');toast(`🚀 ${p.name} lewat START +200 TC`);}
+    placeTokens(true);
+    tileEls[p.pos].classList.add('flash');setTimeout(()=>tileEls[p.pos]?.classList.remove('flash'),460);
+    updateHUD();
+    await wait(250);
+  }
+}
+async function onLand(){
+  const p=S.players[S.cur], i=p.pos, t=TILES[i];
+  S.phase='event';updateHUD();
+  if(t.type==='prop'){
+    const o=S.owner[i];
+    if(o===undefined)openBuy(i);
+    else if(o===p.id){toast(`😎 Aman! Properti sendiri: ${t.name}`);log(`🏠 <b>${p.name}</b> singgah di propertinya sendiri.`,p.color);resolveEvent();}
+    else openRent(i);
+  }
+  else if(t.type==='ch')openChallenge();
+  else if(t.type==='rest')openRest('land');
+  else if(t.type==='boost'){p.coins+=30;log(`📈 <b>${p.name}</b> kena Bandwidth Boost → <b>+30 TC</b>!`,'#a3e635');toast(`📈 Bandwidth penuh! ${p.name} +30 TC`);resolveEvent();}
+  else if(t.type==='tax'){p.coins=Math.max(0,p.coins-60);log(`🔧 <b>${p.name}</b> bayar Maintenance Lab <b>−60 TC</b>.`,'#ff5d6c');toast(`🔧 Maintenance Lab: ${p.name} −60 TC`);renderPlayers();resolveEvent();}
+  else{toast(`🚀 Welcome to START, ${p.name}!`);resolveEvent();}
+}
+function resolveEvent(){S.phase='resolved';updateHUD();hubMsg('✅ Resolved! Klik <b>GILIRAN BERIKUTNYA</b> (atau SPASI).');}
+function nextTurn(){
+  S.cur=(S.cur+1)%S.players.length;
+  if(S.cur===0)S.round++;
+  const p=S.players[S.cur];
+  if(p.resting){S.phase='event';updateHUD();openRest('wake');return;}
+  S.phase='ready';updateHUD();
+  hubMsg(`🎙️ Giliran <b style="color:${p.color}">${p.name}</b> — siapkan deskripsi terbaikmu!`);
+}
+document.addEventListener('keydown',e=>{
+  if(e.code==='Space'&&S&&!S.ended&&!$('#modalRoot').children.length){
+    if($('#drawer').classList.contains('open'))return;
+    e.preventDefault();onRoll();
+  }
+});
+
+/* ================= MODALS ================= */
+function openModal(html,color){
+  const o=document.createElement('div');o.id='overlay';
+  o.innerHTML=`<div class="modal" style="--mc:${color||'var(--cyan)'}">${html}</div>`;
+  $('#modalRoot').appendChild(o);
+  return o;
+}
+function closeModal(){const o=$('#overlay');if(o)o.remove();}
+
+/* --- BELI PROPERTI --- */
+function openBuy(i){
+  const t=TILES[i],p=S.players[S.cur],g=GROUPS[t.group];
+  const afford=p.coins>=t.price;
+  const o=openModal(`
+    <div class="mhead"><span class="mico">${t.icon}</span>
+      <div><h2>${t.name}</h2><div class="sub">${g.name} · belum dimiliki</div></div>
+      <div class="mprice">${t.price} TC<small>SEWA ${t.rent} TC</small></div></div>
+    <div class="mbody">
+      <div class="reqbox">🎙️ <b>SYARAT BELI:</b> deskripsikan <b>${t.name}</b> secara <b>LISAN</b> minimal <b>3 kalimat</b> dalam Bahasa Inggris!</div>
+      <div class="struct"><span class="spill idt">1 · IDENTIFICATION → "… is a/an …"</span><span class="spill dsc">2–3 · DESCRIPTION → ciri, fungsi, adjectives</span></div>
+      <div class="tense">⚡ Wajib Simple Present Tense: <span class="mono">is · has · connects · sends · stores</span></div>
+      <div class="wbank">${t.adj.map(a=>`<span class="wchip">${a}</span>`).join('')}<span class="wchip">device</span><span class="wchip">tool</span><span class="wchip">useful</span></div>
+      <details><summary>🏦 Banker: buka contoh kalimat (jika perlu)</summary><p>${t.ex}</p></details>
+    </div>
+    <div class="mfoot">
+      <p class="bnote">🏦 Keputusan <b>BANKER (${S.cfg.banker})</b> setelah mendengar deskripsi pemain:</p>
+      <div class="mactions">
+        <button class="mbtn ok" id="buyOk" ${afford?'':'disabled'}>✅ BENAR — BELI (−${t.price} TC)</button>
+        <button class="mbtn no" id="buyNo">❌ GAGAL — tetap bebas</button>
+      </div>
+      ${afford?'':'<p style="color:#ffb3bb;font-size:12px;margin-top:8px">💸 Koin tidak cukup untuk membeli.</p>'}
+    </div>`,g.hex);
+  o.querySelector('#buyOk').onclick=()=>{
+    p.coins-=t.price;S.owner[i]=p.id;p.props.push(i);
+    tileEls[i].classList.add('owned');tileEls[i].style.setProperty('--oc',p.color);
+    const f=tileEls[i].querySelector('.ownflag');f.hidden=false;f.style.background=p.color;f.textContent=p.name[0].toUpperCase();
+    log(`🏆 <b style="color:${p.color}">${p.name}</b> membeli <b>${t.name}</b> (−${t.price} TC)!`,p.color);
+    toast(`🎉 ${p.name} menguasai ${t.icon} ${t.name}!`);
+    closeModal();renderPlayers();updateHUD();resolveEvent();
+  };
+  o.querySelector('#buyNo').onclick=()=>{
+    log(`❌ Deskripsi <b>${p.name}</b> belum lolos → <b>${t.name}</b> tetap bebas.`,p.color);
+    closeModal();resolveEvent();
+  };
+}
+
+/* --- SEWA --- */
+function openRent(i){
+  const t=TILES[i],p=S.players[S.cur],owner=S.players[S.owner[i]],g=GROUPS[t.group];
+  const half=Math.ceil(t.rent/2);
+  const o=openModal(`
+    <div class="mhead"><span class="mico">${t.icon}</span>
+      <div><h2>${t.name}</h2><div class="sub">Milik ${owner.avatar} ${owner.name}</div></div>
+      <div class="mprice">${t.rent} TC<small>SEWA PENUH</small></div></div>
+    <div class="mbody">
+      <div class="reqbox">💸 Kamu harus membayar sewa <b>${t.rent} TC</b> kepada <b>${owner.name}</b>.<br><br>
+      🎁 <b>DISKON 50%:</b> sebutkan minimal <b>2 adjectives</b> yang tepat untuk <b>${t.name}</b>!</div>
+      <div class="wbank">${t.adj.map(a=>`<span class="wchip">${a}</span>`).join('')}<span class="wchip">fast</span><span class="wchip">modern</span><span class="wchip">reliable</span><span class="wchip">useful</span></div>
+      <p class="bnote" style="margin-top:6px">💰 Saldo kamu: <b class="mono" style="color:var(--amber)">${p.coins} TC</b></p>
+    </div>
+    <div class="mfoot">
+      <p class="bnote">🏦 Keputusan <b>BANKER (${S.cfg.banker})</b>:</p>
+      <div class="mactions">
+        <button class="mbtn ok" id="rHalf">🎁 2 ADJECTIVES ✓ → bayar ${half} TC</button>
+        <button class="mbtn no" id="rFull">😬 Gagal → bayar penuh ${t.rent} TC</button>
+      </div>
+    </div>`,g.hex);
+  const pay=amt=>{
+    const paid=Math.min(amt,p.coins);
+    p.coins-=paid;owner.coins+=paid;
+    log(`💸 <b style="color:${p.color}">${p.name}</b> bayar sewa ${t.name} <b>${paid} TC</b> → <b style="color:${owner.color}">${owner.name}</b>${paid<amt?' (diskon adjectives!)':''}`,owner.color);
+    toast(`${paid<amt?'🎁 Diskon 50%! ':'💸 '}${p.name} bayar ${paid} TC ke ${owner.name}`);
+    closeModal();renderPlayers();updateHUD();resolveEvent();
+  };
+  o.querySelector('#rHalf').onclick=()=>pay(half);
+  o.querySelector('#rFull').onclick=()=>pay(t.rent);
+}
+
+/* --- CHALLENGE --- */
+function drawCard(){if(!S.deck.length)S.deck=shuffle(CARDS);return S.deck.pop();}
+function openChallenge(){
+  const c=drawCard(),[label,color]=CARDTYPES[c.t];
+  const o=openModal(`
+    <div class="mhead"><span class="mico">🃏</span>
+      <div><h2>Challenge Card</h2><div class="sub"><span class="cbadge" style="background:${color}22;color:${color};border:1px solid ${color}66">${label}</span></div></div>
+      <div class="mprice">+60 / −30<small>TC</small></div></div>
+    <div class="mbody">
+      <div class="cardq flipin">${c.q}</div>
+      <p class="bnote">✍️ Diskusikan &amp; jawab bersama kelompok (tulis di sini / di lembar kerja):</p>
+      <textarea id="ans" placeholder="Write your answer in English here…"></textarea>
+      <div id="judge" hidden>
+        <div class="keybox">🗝️ <b>Kunci / Contoh Jawaban:</b><br>${c.k}</div>
+        <p class="bnote">🏦 <b>Banker + Guru</b> menilai jawaban kelompok:</p>
+        <div class="mactions">
+          <button class="mbtn ok" id="cOk">✅ BENAR → +60 TC</button>
+          <button class="mbtn no" id="cNo">❌ SALAH → −30 TC</button>
+        </div>
+      </div>
+    </div>
+    <div class="mfoot" id="footDone"><div class="mactions"><button class="mbtn mid" id="doneBtn">✋ SELESAI MENULIS — MINTA DINILAI ▸</button></div></div>`,color);
+  o.querySelector('#doneBtn').onclick=()=>{o.querySelector('#judge').hidden=false;o.querySelector('#footDone').style.display='none';};
+  const p=S.players[S.cur];
+  const finish=ok=>{
+    if(ok){p.coins+=60;log(`🌟 Kelompok menjawab challenge dengan BENAR → <b style="color:${p.color}">${p.name}</b> +60 TC!`,'#a3e635');toast('🌟 Challenge berhasil! +60 TC');}
+    else{p.coins=Math.max(0,p.coins-30);log(`💥 Challenge gagal → <b>${p.name}</b> −30 TC.`,'#ff5d6c');toast('💥 Challenge gagal −30 TC');}
+    closeModal();renderPlayers();updateHUD();resolveEvent();
+  };
+  o.querySelector('#cOk').onclick=()=>finish(true);
+  o.querySelector('#cNo').onclick=()=>finish(false);
+}
+
+/* --- REST AREA --- */
+function openRest(mode){
+  const p=S.players[S.cur];
+  const o=openModal(`
+    <div class="mhead"><span class="mico">☕</span>
+      <div><h2>Rest Area</h2><div class="sub">${mode==='land'?'Pion '+p.name+' masuk area istirahat':p.name+' sedang istirahat'}</div></div></div>
+    <div class="mbody">
+      <div class="reqbox">😴 Pemain tidak bisa berjalan <b>1 putaran</b>…<br><br>
+      ✍️ <b>KECUALI</b> kelompok menulis <b>1 paragraf descriptive text</b> tentang:<br>
+      <b style="color:var(--cyan);font-size:15.5px">"My Ideal Computer Laboratory"</b><br>
+      <span style="font-size:12px;color:var(--muted)">Min. 3 kalimat · Simple Present Tense · ada Identification &amp; Description</span></div>
+      <textarea id="restText" placeholder="My ideal computer laboratory is …">${S.restText}</textarea>
+    </div>
+    <div class="mfoot">
+      <p class="bnote">🏦 Guru / Banker memeriksa paragraf (boleh ditulis di lembar kerja kelompok):</p>
+      <div class="mactions">
+        <button class="mbtn ok" id="rPass">📝 PARAGRAF DISETOR &amp; DISETUJUI → bebas!</button>
+        <button class="mbtn no" id="rStay">${mode==='land'?'😴 ISTIRAHAT 1 PUTARAN':'⏭️ LEWATI GILIRAN INI'}</button>
+      </div>
+    </div>`,'#ff5d6c');
+  o.querySelector('#rPass').onclick=()=>{
+    S.restText=o.querySelector('#restText').value;
+    p.resting=false;
+    log(`📝 Paragraf <i>"My Ideal Computer Laboratory"</i> disetujui → <b style="color:${p.color}">${p.name}</b> BEBAS dari Rest Area!`,'#a3e635');
+    toast(`🎊 ${p.name} bebas dari Rest Area!`);
+    closeModal();updateHUD();
+    if(mode==='land')resolveEvent();
+    else{S.phase='ready';updateHUD();hubMsg(`🎙️ <b style="color:${p.color}">${p.name}</b> bebas! Silakan lempar dadu.`);}
+  };
+  o.querySelector('#rStay').onclick=()=>{
+    S.restText=o.querySelector('#restText').value;
+    p.resting=false; // sudah menjalani / memilih lewat
+    log(`☕ <b style="color:${p.color}">${p.name}</b> ${mode==='land'?'akan istirahat 1 putaran':'melewati giliran (istirahat)'} di Rest Area.`,'#ff5d6c');
+    closeModal();
+    if(mode==='land'){p.resting=true;updateHUD();resolveEvent();}
+    else nextTurn();
+  };
+}
+
+/* ================= PENILAIAN ================= */
+const ASPEK=['Language Features','Generic Structure','Fluency & Confidence','Collaboration'];
+function openAssess(){
+  const h=`
+    <div class="mhead"><span class="mico">📝</span>
+      <div><h2>Panel Penilaian Guru</h2><div class="sub">${S?S.cfg.group:''} · skor 1–4 per aspek</div></div></div>
+    <div class="mbody">
+      <p style="font-size:12.5px;color:var(--muted);margin-bottom:10px">Amati saat permainan: ketepatan <b>Simple Present Tense &amp; adjectives</b>, struktur <b>Identification–Description</b>, kelancaran bicara, dan kerjasama kelompok.</p>
+      <table class="asgrid"><thead><tr><th style="text-align:left">Siswa</th><th>Lang.</th><th>Struk.</th><th>Fluen.</th><th>Collab.</th><th>Total</th></tr></thead>
+      <tbody id="asBody"></tbody></table>
+      ${S&&S.restText?`<h4 style="font-size:11px;letter-spacing:2px;color:var(--cyan);margin:16px 0 6px">📄 PARAGRAF REST AREA TERAKHIR</h4><div style="background:#0a1a29;border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:13px;font-style:italic">${S.restText}</div>`:''}
+      <div class="flabel" style="margin-top:14px">Catatan Guru</div>
+      <textarea id="asNote" style="min-height:56px" placeholder="Catatan observasi…"></textarea>
+    </div>
+    <div class="mfoot"><div class="mactions">
+      <button class="mbtn mid" id="copyRekap">📋 SALIN REKAP NILAI</button>
+      <button class="mbtn ghost" onclick="closeModal()">Tutup</button>
+    </div></div>`;
+  const o=openModal(h,'#ffc531');
+  renderAsBody();
+  o.querySelector('#copyRekap').onclick=copyRekap;
+}
+function renderAsBody(){
+  $('#asBody').innerHTML=S.players.map((p,pi)=>`
+    <tr><td><span style="color:${p.color}">●</span> ${p.name}</td>
+    ${[0,1,2,3].map(a=>`<td>${[1,2,3,4].map(v=>`<button class="scorebtn ${S.scores[pi][a]===v?'on':''}" onclick="setScore(${pi},${a},${v})">${v}</button>`).join('')}</td>`).join('')}
+    <td class="astotal">${S.scores[pi].reduce((x,y)=>x+y,0)}/16</td></tr>`).join('');
+}
+function setScore(pi,a,v){S.scores[pi][a]=v;renderAsBody();}
+function copyRekap(){
+  const note=$('#asNote')?.value||'';
+  let txt=`📋 REKAP PENILAIAN MONOTECH — ${S.cfg.group}\nAspek: LF=Language Features | GS=Generic Structure | FC=Fluency&Confidence | CO=Collaboration\n`;
+  txt+=`| Siswa | LF | GS | FC | CO | Total/16 |\n`;
+  S.players.forEach((p,i)=>{const s=S.scores[i];txt+=`| ${p.name} | ${s[0]||'-'} | ${s[1]||'-'} | ${s[2]||'-'} | ${s[3]||'-'} | ${s.reduce((a,b)=>a+b,0)} |\n`;});
+  if(S.restText)txt+=`\nParagraf Rest Area:\n"${S.restText}"\n`;
+  if(note)txt+=`\nCatatan guru: ${note}`;
+  navigator.clipboard?.writeText(txt).then(()=>toast('📋 Rekap nilai tersalin! Tempel di rapor/Excel.'))
+    .catch(()=>{prompt('Salin rekap berikut:',txt);});
+}
+
+/* ================= PANDUAN ================= */
+function openHelp(){
+  openModal(`
+  <div class="mhead"><span class="mico">📖</span><div><h2>Panduan &amp; Aturan Resmi</h2><div class="sub">MONOTECH · Descriptive Text · Fase E TKJ</div></div></div>
+  <div class="mbody" style="font-size:13.5px;line-height:1.65">
+    <h4 style="color:var(--cyan);margin-bottom:6px">🎯 TUJUAN</h4>
+    <p style="margin-bottom:12px">Mengumpulkan <b>properti teknologi TKJ terbanyak</b> + <b>Tech Coins (TC) tersisa</b> saat waktu habis, dengan mendeskripsikan objek dalam Bahasa Inggris.</p>
+    <h4 style="color:var(--cyan);margin-bottom:6px">👥 PERSIAPAN</h4>
+    <p style="margin-bottom:12px">Kelompok 4–5 siswa: <b>1 Banker</b> (mengatur kartu, uang, dan memverifikasi deskripsi) + sisanya pemain aktif. Setiap pemain mulai dengan <b>1000 TC</b>.</p>
+    <h4 style="color:var(--cyan);margin-bottom:6px">🎲 GILIRAN</h4>
+    <p style="margin-bottom:12px">Lempar dadu bergantian searah jarum jam (yang dadunya tertinggi mulai duluan). Gerakan pion sesuai angka dadu.</p>
+    <h4 style="color:var(--cyan);margin-bottom:6px">🏠 MEMBELI PROPERTI</h4>
+    <p style="margin-bottom:12px">Berhenti di properti bebas → boleh beli jika <b>mendeskripsikan lisan min. 3 kalimat</b> (Identification + Description, Simple Present Tense) dan disetujui Banker. Gagal → properti tetap bebas.</p>
+    <h4 style="color:var(--cyan);margin-bottom:6px">💸 MEMBAYAR SEWA</h4>
+    <p style="margin-bottom:12px">Berhenti di properti pemain lain → bayar sewa sesuai kartu. <b>Diskon 50%</b> jika mampu menyebut <b>2 adjectives</b> yang tepat.</p>
+    <h4 style="color:var(--cyan);margin-bottom:6px">🃏 KARTU TANTANGAN</h4>
+    <p style="margin-bottom:12px">Instruksi menulis/membenarkan descriptive text pendek. Benar <b>+60 TC</b>, salah <b>−30 TC</b>.</p>
+    <h4 style="color:var(--cyan);margin-bottom:6px">☕ REST AREA (pengganti penjara)</h4>
+    <p style="margin-bottom:12px">Tidak bisa jalan 1 putaran, kecuali menulis <b>1 paragraf</b> <i>"My Ideal Computer Laboratory"</i> yang disetujui guru/banker.</p>
+    <h4 style="color:var(--cyan);margin-bottom:6px">🏆 PEMENANG</h4>
+    <p style="margin-bottom:12px">Saat waktu (30–45 menit) habis: peringkat ditentukan oleh <b>jumlah properti</b>, lalu <b>sisa Tech Coins</b>.</p>
+    <h4 style="color:var(--cyan);margin-bottom:6px">📝 RUBRIK PENILAIAN GURU</h4>
+    <div class="gstruct">
+      <div class="g1"><b>Language Features</b> — ketepatan Simple Present Tense &amp; adjectives (fast, reliable, digital, modern…).</div>
+      <div class="g2"><b>Generic Structure</b> — membedakan Identification vs Description.</div>
+      <div class="g1"><b>Fluency &amp; Confidence</b> — keberanian &amp; kelancaran bicara saat klaim properti.</div>
+      <div class="g2"><b>Collaboration</b> — kerjasama saat mengecek jawaban tantangan.</div>
+    </div>
+  </div>
+  <div class="mfoot"><div class="mactions"><button class="mbtn mid" onclick="closeModal()">MENGERTI ▸</button></div></div>`,'#35d6e8');
+}
+function toggleDrawer(v){$('#drawer').classList.toggle('open',v);}
+
+/* ================= AKHIR PERMAINAN ================= */
+function confirmEnd(){
+  const o=openModal(`
+    <div class="mhead"><span class="mico">🏁</span><div><h2>Akhiri Permainan?</h2><div class="sub">Peringkat dihitung sekarang</div></div></div>
+    <div class="mbody"><p>Waktu tersisa <b class="mono" style="color:var(--amber)">${fmtT(Math.max(0,S.timeLeft))}</b>. Yakin akhiri dan hitung pemenang?</p></div>
+    <div class="mfoot"><div class="mactions">
+      <button class="mbtn ok" onclick="closeModal();endGame('manual')">🏁 YA, AKHIRI</button>
+      <button class="mbtn ghost" onclick="closeModal()">Lanjut main</button>
+    </div></div>`,'#ffc531');
+}
+function endGame(reason){
+  if(S.ended)return;S.ended=true;clearInterval(S.timer);
+  const ranked=[...S.players].sort((a,b)=>b.props.length-a.props.length||b.coins-a.coins);
+  const medal=['🥇','🥈','🥉','🏅'];
+  const o=openModal(`
+    <div class="mhead"><span class="mico">🏆</span>
+      <div><h2>GAME OVER!</h2><div class="sub">${S.cfg.group} · ${reason==='waktu'?'⏰ Waktu habis':'🏁 Dihentikan manual'} · ${S.round} ronde</div></div></div>
+    <div class="mbody">
+      ${ranked.map((p,i)=>`
+        <div class="rankrow ${i===0?'r1':''}" style="--pc:${p.color}">
+          <span class="rankpos">${medal[i]||'🏅'}</span>
+          <span style="font-size:20px">${p.avatar}</span>
+          <span class="rn" style="color:${p.color}">${p.name}</span>
+          <span class="rv">🏠 <b>${p.props.length}</b> properti · <b>${p.coins}</b> TC · skor <b>${p.props.length*100+p.coins}</b></span>
+        </div>`).join('')}
+      <p style="font-size:12.5px;color:var(--muted);margin-top:8px">Ketentuan pemenang: properti terbanyak dulu, baru sisa Tech Coins. Jangan lupa isi <b>Panel Penilaian</b> untuk nilai deskriptif tiap siswa! 📝</p>
+    </div>
+    <div class="mfoot"><div class="mactions">
+      <button class="mbtn mid" onclick="closeModal();openAssess()">📝 NILAI SISWA</button>
+      <button class="mbtn ghost" onclick="location.reload()">🔄 Main Lagi</button>
+    </div></div>`,'#ffd166');
+  confetti();
+}
+function confetti(){
+  const cols=['#35d6e8','#a3e635','#ffc531','#ff6b81','#b07cff','#ffd166'];
+  for(let i=0;i<90;i++){
+    const c=document.createElement('div');c.className='cf';
+    c.style.cssText=`left:${Math.random()*100}vw;background:${cols[i%cols.length]};animation-duration:${2+Math.random()*2.4}s;animation-delay:${Math.random()*.9}s;transform:rotate(${Math.random()*360}deg)`;
+    document.body.appendChild(c);setTimeout(()=>c.remove(),5200);
+  }
+}
+</script>
+</body>
+</html>
