@@ -1,0 +1,1619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TECH GEAR MISSION – Become a Tech Copywriter</title>
+<!-- Font opsional; game tetap jalan offline dengan font fallback -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   TECH GEAR MISSION — STYLE
+   Palet: biru laut dalam, ungu, cyan, putih
+   ============================================================ */
+:root{
+  --bg:#070c1d; --panel:#101a3a; --panel2:#0b1330; --line:#243468;
+  --cyan:#3fe0ff; --blue:#3b82f6; --violet:#8b5cf6; --ok:#34d399; --bad:#fb7185;
+  --warn:#fbbf24; --ink:#e9efff; --mut:#9fb0d8;
+  --disp:'Chakra Petch','Segoe UI',system-ui,sans-serif;
+  --body:'Plus Jakarta Sans','Segoe UI',system-ui,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--body); color:var(--ink); background:var(--bg);
+  min-height:100vh; overflow-x:hidden; line-height:1.55;
+}
+/* Latar hidup: grid + dua cahaya yang bergeser pelan */
+body::before{
+  content:""; position:fixed; inset:0; z-index:0; pointer-events:none;
+  background-image:
+    linear-gradient(rgba(63,224,255,.045) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(63,224,255,.045) 1px,transparent 1px);
+  background-size:44px 44px;
+  mask-image:radial-gradient(ellipse at 50% 20%,#000 30%,transparent 90%);
+}
+body::after{
+  content:""; position:fixed; inset:-20%; z-index:0; pointer-events:none;
+  background:
+    radial-gradient(600px 420px at 18% 12%, rgba(59,130,246,.16), transparent 60%),
+    radial-gradient(700px 520px at 85% 80%, rgba(139,92,246,.14), transparent 60%),
+    radial-gradient(400px 300px at 70% 15%, rgba(63,224,255,.10), transparent 60%);
+  animation:drift 26s ease-in-out infinite alternate;
+}
+@keyframes drift{from{transform:translate(0,0) scale(1)}to{transform:translate(2.5%,-2%) scale(1.05)}}
+#app{position:relative;z-index:1;max-width:1180px;margin:0 auto;padding:14px 16px 60px}
+.hidden{display:none!important}
+h1,h2,h3,.disp{font-family:var(--disp)}
+::selection{background:rgba(63,224,255,.35)}
+button{font-family:inherit;cursor:pointer}
+input,textarea,select{font-family:inherit;font-size:1rem}
+:focus-visible{outline:3px solid var(--cyan);outline-offset:2px;border-radius:6px}
+
+/* ---------- Panel & kartu ---------- */
+.card{
+  background:linear-gradient(180deg,var(--panel),var(--panel2));
+  border:1px solid var(--line); border-radius:12px; padding:20px; position:relative;
+  box-shadow:0 10px 30px rgba(3,7,24,.5);
+}
+.card::before{content:"";position:absolute;top:0;left:14px;right:14px;height:2px;
+  background:linear-gradient(90deg,transparent,rgba(63,224,255,.6),transparent)}
+.tag{display:inline-block;font-family:var(--disp);font-size:.68rem;letter-spacing:.18em;
+  color:var(--cyan);border:1px solid rgba(63,224,255,.4);padding:3px 10px;border-radius:4px;
+  background:rgba(63,224,255,.07);text-transform:uppercase}
+
+/* ---------- Tombol ---------- */
+.btn{
+  font-family:var(--disp);font-weight:600;letter-spacing:.06em;font-size:.95rem;
+  color:#051022;background:linear-gradient(135deg,var(--cyan),#38bdf8);
+  border:none;padding:13px 22px;
+  clip-path:polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px);
+  transition:transform .15s,box-shadow .15s,filter .15s;
+}
+.btn:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(63,224,255,.35);filter:brightness(1.08)}
+.btn:active{transform:translateY(0)}
+.btn:disabled{filter:grayscale(.8);opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line);clip-path:none;border-radius:8px}
+.btn.ghost:hover{border-color:var(--cyan);color:var(--cyan);box-shadow:0 0 16px rgba(63,224,255,.15)}
+.btn.violet{background:linear-gradient(135deg,var(--violet),#6d5cf6);color:#fff}
+.btn.small{padding:8px 14px;font-size:.78rem}
+.btn.big{padding:16px 34px;font-size:1.1rem}
+
+/* ---------- HUD ---------- */
+#hud{
+  display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;
+  padding:10px 14px;margin-bottom:16px;border:1px solid var(--line);border-radius:12px;
+  background:rgba(11,19,48,.9);position:sticky;top:8px;z-index:40;backdrop-filter:blur(6px);
+}
+.hud-logo{font-family:var(--disp);font-weight:700;font-size:.95rem;color:var(--cyan);letter-spacing:.08em;white-space:nowrap}
+.hud-logo span{color:var(--violet)}
+#progTrack{display:flex;gap:4px;align-items:center;flex:1;min-width:170px;max-width:340px;margin:0 8px}
+.pseg{flex:1;height:8px;background:#182450;border-radius:3px;overflow:hidden;position:relative}
+.pseg>i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--blue),var(--cyan));transition:width .5s}
+.pseg.done>i{width:100%}
+.hud-chips{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.chip{font-family:var(--disp);font-size:.78rem;padding:5px 10px;border:1px solid var(--line);
+  border-radius:6px;background:#0d1638;white-space:nowrap}
+.chip b{color:var(--cyan)}
+#hudLives{color:#fda4af}#hudCombo{color:var(--warn)}
+#hudTimer{color:var(--warn);border-color:rgba(251,191,36,.5)}
+#hudTimer.low{animation:pulse .6s infinite}
+@keyframes pulse{50%{transform:scale(1.12);background:rgba(251,113,133,.2)}}
+.icon-btn{background:#0d1638;border:1px solid var(--line);color:var(--ink);border-radius:6px;
+  padding:5px 10px;font-size:.9rem;transition:border-color .15s}
+.icon-btn:hover{border-color:var(--cyan)}
+
+/* ---------- Start screen ---------- */
+.start-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:26px;align-items:start;margin-top:8px}
+.term{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#080f28}
+.term-bar{display:flex;gap:6px;padding:9px 12px;background:#0d1638;border-bottom:1px solid var(--line)}
+.term-bar i{width:11px;height:11px;border-radius:50%;background:#233}
+.term-bar i:nth-child(1){background:#fb7185}.term-bar i:nth-child(2){background:#fbbf24}.term-bar i:nth-child(3){background:#34d399}
+.term-bar span{margin-left:8px;font-size:.72rem;color:var(--mut);font-family:var(--disp);letter-spacing:.1em}
+.term-body{padding:18px;font-size:.92rem;min-height:170px}
+.term-body .ln{margin-bottom:8px;color:#bcd0ff}
+.term-body .ln b{color:var(--cyan)}
+.cursor::after{content:"▌";color:var(--cyan);animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.gear-strip{display:flex;gap:14px;justify-content:center;margin:18px 0 6px;flex-wrap:wrap}
+.gear{font-size:2rem;width:62px;height:62px;display:grid;place-items:center;border:1px solid var(--line);
+  border-radius:10px;background:#0d1638;animation:floaty 3.4s ease-in-out infinite}
+.gear:nth-child(2){animation-delay:.4s}.gear:nth-child(3){animation-delay:.8s}
+.gear:nth-child(4){animation-delay:1.2s}.gear:nth-child(5){animation-delay:1.6s}
+@keyframes floaty{50%{transform:translateY(-8px)}}
+.game-title{font-size:clamp(1.9rem,5vw,3.2rem);line-height:1.05;font-weight:700;letter-spacing:.02em;margin:6px 0 4px}
+.game-title em{font-style:normal;color:var(--cyan);text-shadow:0 0 22px rgba(63,224,255,.5)}
+.game-sub{color:#c4b5fd;font-family:var(--disp);letter-spacing:.12em;font-size:.85rem;text-transform:uppercase}
+.motto{color:var(--mut);font-style:italic;margin-top:8px}
+.field{margin-bottom:12px}
+.field label{display:block;font-family:var(--disp);font-size:.72rem;letter-spacing:.14em;color:var(--mut);margin-bottom:5px;text-transform:uppercase}
+.field input,.field textarea{width:100%;padding:11px 12px;border-radius:8px;border:1px solid var(--line);
+  background:#0a1230;color:var(--ink)}
+.field input:focus,.field textarea:focus{border-color:var(--cyan);outline:none;box-shadow:0 0 0 3px rgba(63,224,255,.15)}
+.mode-row{display:flex;gap:8px;margin-bottom:14px}
+.mode-btn{flex:1;padding:11px;border-radius:8px;border:1px solid var(--line);background:#0a1230;color:var(--mut);
+  font-family:var(--disp);letter-spacing:.06em;transition:.15s}
+.mode-btn.active{border-color:var(--cyan);color:var(--cyan);background:rgba(63,224,255,.08);box-shadow:0 0 14px rgba(63,224,255,.15)}
+.role-list{font-size:.8rem;color:var(--mut);margin:8px 0 0;list-style:none}
+.role-list li{padding:3px 0;border-bottom:1px dashed #1c2a58}
+.role-list b{color:#c4b5fd;font-family:var(--disp);font-size:.72rem;letter-spacing:.06em}
+
+/* ---------- Dashboard ---------- */
+.dash-grid{display:grid;grid-template-columns:340px 1fr;gap:18px}
+.stat-row{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px dashed #1c2a58;font-size:.9rem}
+.stat-row b{color:var(--cyan)}
+.avatar{width:74px;height:74px;border-radius:12px;display:grid;place-items:center;font-size:2.1rem;
+  background:linear-gradient(135deg,#1d2b63,#3b2a72);border:1px solid var(--line);margin-bottom:10px}
+.lvl-map{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:12px}
+.lvl-node{border:1px solid var(--line);border-radius:10px;padding:12px 8px;text-align:center;background:#0c1534;
+  transition:.2s;position:relative}
+.lvl-node .ic{font-size:1.5rem}
+.lvl-node .nm{font-family:var(--disp);font-size:.62rem;letter-spacing:.06em;color:var(--mut);margin-top:4px;display:block}
+.lvl-node.done{border-color:rgba(52,211,153,.6)}
+.lvl-node.done .nm{color:var(--ok)}
+.lvl-node.current{border-color:var(--cyan);box-shadow:0 0 18px rgba(63,224,255,.25);animation:pulse 2s infinite}
+.lvl-node.locked{opacity:.45;filter:grayscale(.9)}
+.badge-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}
+.badge{border:1px solid var(--line);border-radius:10px;padding:12px 8px;text-align:center;background:#0c1534}
+.badge .em{font-size:1.7rem;display:block}
+.badge .nm{font-family:var(--disp);font-size:.62rem;letter-spacing:.05em;color:var(--mut);display:block;margin-top:4px}
+.badge.locked{filter:grayscale(1);opacity:.4}
+.badge.won{border-color:rgba(251,191,36,.6);box-shadow:0 0 14px rgba(251,191,36,.18)}
+.badge.won .nm{color:var(--warn)}
+
+/* ---------- Level area ---------- */
+.level-head{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:14px}
+.level-head h2{font-size:1.25rem;letter-spacing:.04em}
+.level-head .sub{color:var(--mut);font-size:.85rem}
+.clue{border-left:3px solid var(--cyan);background:#0c1534;padding:11px 14px;border-radius:0 8px 8px 0;margin-bottom:8px;
+  animation:slidein .35s ease}
+@keyframes slidein{from{opacity:0;transform:translateX(-12px)}to{opacity:1;transform:none}}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.opt{
+  text-align:left;padding:14px 16px;border-radius:10px;border:1px solid var(--line);background:#0c1534;
+  color:var(--ink);font-size:.98rem;font-weight:600;transition:.15s;display:flex;gap:10px;align-items:center;
+}
+.opt .key{font-family:var(--disp);color:var(--cyan);border:1px solid rgba(63,224,255,.4);border-radius:6px;
+  width:28px;height:28px;display:grid;place-items:center;font-size:.8rem;flex:none}
+.opt:hover:not(:disabled){border-color:var(--cyan);transform:translateY(-2px);box-shadow:0 6px 18px rgba(63,224,255,.15)}
+.opt:disabled{cursor:default}
+.opt.right{border-color:var(--ok);background:rgba(52,211,153,.14)}
+.opt.right .key{color:var(--ok);border-color:var(--ok)}
+.opt.wrong{border-color:var(--bad);background:rgba(251,113,133,.13);animation:shake .4s}
+.opt.wrong .key{color:var(--bad);border-color:var(--bad)}
+@keyframes shake{20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.fb{margin-top:14px;padding:14px 16px;border-radius:10px;animation:slidein .3s}
+.fb.good{background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.5)}
+.fb.bad{background:rgba(251,113,133,.09);border:1px solid rgba(251,113,133,.5)}
+.fb h4{font-family:var(--disp);letter-spacing:.06em;margin-bottom:4px}
+.fb.good h4{color:var(--ok)}.fb.bad h4{color:var(--bad)}
+.fb p{font-size:.9rem;color:#d6e2ff}
+.fb .id{color:var(--mut);font-size:.8rem;margin-top:4px}
+
+/* ---------- Level 2 ---------- */
+.l2-wrap{display:grid;grid-template-columns:1fr 1.2fr;gap:14px}
+.l2-pool{display:flex;flex-wrap:wrap;gap:8px;align-content:flex-start;min-height:120px}
+.l2-item{padding:9px 13px;border:1px solid var(--line);border-radius:8px;background:#0d1840;font-weight:600;
+  font-size:.9rem;cursor:grab;transition:.15s;user-select:none}
+.l2-item:hover{border-color:var(--cyan)}
+.l2-item.sel{border-color:var(--warn);background:rgba(251,191,36,.14);box-shadow:0 0 12px rgba(251,191,36,.25)}
+.l2-item.flash-bad{animation:shake .4s;border-color:var(--bad)}
+.l2-cats{display:grid;gap:8px}
+.l2-cat{border:1px dashed var(--line);border-radius:10px;padding:9px 12px;background:#0a1230;min-height:56px;transition:.15s}
+.l2-cat.over{border-color:var(--cyan);background:rgba(63,224,255,.07)}
+.l2-cat h4{font-family:var(--disp);font-size:.72rem;letter-spacing:.1em;color:var(--cyan);margin-bottom:5px}
+.l2-cat .placed{display:flex;flex-wrap:wrap;gap:6px}
+.l2-cat .placed span{font-size:.8rem;padding:4px 9px;border-radius:6px;background:rgba(52,211,153,.15);border:1px solid rgba(52,211,153,.5)}
+
+/* ---------- Level 3 ---------- */
+.tok{padding:8px 12px;margin:4px;border-radius:8px;border:1px solid var(--line);background:#0c1534;
+  font-size:1rem;font-weight:600;transition:.15s}
+.tok:hover:not(:disabled){border-color:var(--cyan)}
+.tok.ok{border-color:var(--ok);background:rgba(52,211,153,.16);color:var(--ok)}
+.tok.no{border-color:var(--bad);background:rgba(251,113,133,.14)}
+.build-area{min-height:56px;border:1px dashed var(--line);border-radius:10px;padding:10px;margin:12px 0;background:#0a1230;
+  display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.build-area .bword{background:rgba(63,224,255,.13);border:1px solid rgba(63,224,255,.5);color:var(--ink);
+  padding:7px 12px;border-radius:8px;font-weight:600;cursor:pointer}
+.pool .tok{cursor:pointer}
+.mini-tag{display:inline-block;background:rgba(139,92,246,.16);border:1px solid rgba(139,92,246,.5);color:#d8c9ff;
+  font-family:var(--disp);font-size:.7rem;letter-spacing:.12em;padding:3px 10px;border-radius:4px;margin-bottom:10px}
+
+/* ---------- Level 4 ---------- */
+.listings{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+.listing{border-radius:12px;padding:16px;font-size:.88rem}
+.listing h4{font-family:var(--disp);letter-spacing:.05em;margin-bottom:8px}
+.listing.l1{border:1px solid rgba(251,113,133,.5);background:rgba(251,113,133,.05)}
+.listing.l1 h4{color:var(--bad)}
+.listing.l2{border:1px solid rgba(52,211,153,.5);background:rgba(52,211,153,.04)}
+.listing.l2 h4{color:var(--ok)}
+.claim-card{border:1px solid var(--line);border-radius:10px;background:#0c1534;padding:14px;margin-bottom:12px;font-size:1.02rem;font-weight:600}
+.verdict{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.verdict button{padding:11px 8px;border-radius:8px;border:1px solid var(--line);background:#0a1230;color:var(--ink);
+  font-weight:600;font-size:.85rem;transition:.15s}
+.verdict button:hover:not(:disabled){border-color:var(--cyan)}
+.verdict button.right{border-color:var(--ok);background:rgba(52,211,153,.16)}
+.verdict button.wrong{border-color:var(--bad);background:rgba(251,113,133,.13)}
+.qi{display:flex;gap:8px;align-items:flex-start;padding:7px 0;font-size:.92rem}
+.qi input{margin-top:4px;accent-color:var(--cyan);width:17px;height:17px}
+
+/* ---------- Level 5 ---------- */
+.dev-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.dev-card{border:1px solid var(--line);border-radius:12px;padding:16px 8px;text-align:center;background:#0c1534;
+  color:var(--ink);transition:.18s}
+.dev-card .ic{font-size:2rem;display:block;margin-bottom:6px}
+.dev-card .nm{font-family:var(--disp);font-size:.72rem;letter-spacing:.05em;color:var(--mut)}
+.dev-card:hover{border-color:var(--cyan);transform:translateY(-3px);box-shadow:0 8px 20px rgba(63,224,255,.15)}
+.dev-card.sel{border-color:var(--warn);background:rgba(251,191,36,.08)}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-grid .full{grid-column:1/-1}
+.check-list{list-style:none;margin-top:8px}
+.check-list li{padding:6px 0;font-size:.86rem;border-bottom:1px dashed #1c2a58;display:flex;gap:8px}
+.check-list .yes{color:var(--ok)}.check-list .no{color:var(--bad)}
+.check-list .sug{color:var(--mut);font-size:.78rem;display:block;margin-left:26px}
+.wordmeter{font-family:var(--disp);font-size:.75rem;letter-spacing:.08em;color:var(--mut);margin-top:6px}
+.wordmeter.good{color:var(--ok)}.wordmeter.ideal{color:var(--warn)}
+.pitch{max-width:560px;margin:0 auto;border:1px solid rgba(63,224,255,.45);border-radius:14px;overflow:hidden;
+  background:linear-gradient(180deg,#0e1838,#0a1128);box-shadow:0 0 34px rgba(63,224,255,.12)}
+.pitch-hero{padding:26px;text-align:center;font-size:3.4rem;background:radial-gradient(circle at 50% 0%,rgba(63,224,255,.14),transparent 70%)}
+.pitch-body{padding:20px 22px}
+.pitch-body h3{font-size:1.3rem}
+.pitch-body .tl{color:var(--cyan);font-style:italic;font-size:.9rem;margin:2px 0 10px}
+.pitch-body .desc{font-size:.92rem;color:#d6e2ff;white-space:pre-wrap;border-top:1px dashed #24346a;border-bottom:1px dashed #24346a;padding:12px 0;margin-bottom:10px}
+.spec-line{font-size:.82rem;padding:4px 0;color:var(--mut)}
+.spec-line b{color:var(--ink)}
+.rubric-row{display:grid;grid-template-columns:1fr auto;gap:4px;padding:10px 0;border-bottom:1px dashed #1c2a58}
+.rubric-row .bar{height:7px;background:#182450;border-radius:4px;overflow:hidden;margin-top:4px}
+.rubric-row .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--violet),var(--cyan));transition:width .8s}
+.rubric-row .why{grid-column:1/-1;font-size:.8rem;color:var(--mut)}
+.rubric-row b{color:var(--cyan);font-family:var(--disp)}
+
+/* ---------- Overlay / modal ---------- */
+.overlay{position:fixed;inset:0;background:rgba(4,8,22,.82);z-index:90;display:flex;align-items:center;
+  justify-content:center;padding:18px;backdrop-filter:blur(4px)}
+.modal{max-width:720px;width:100%;max-height:88vh;overflow:auto;background:linear-gradient(180deg,#111c40,#0b1330);
+  border:1px solid var(--line);border-radius:14px;padding:26px;animation:pop .3s ease}
+@keyframes pop{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
+.modal h3{color:var(--cyan);letter-spacing:.05em;margin-bottom:10px}
+.modal h4{margin:14px 0 6px;color:#c4b5fd;font-family:var(--disp);letter-spacing:.05em}
+.modal p,.modal li{font-size:.92rem;color:#d6e2ff}
+.modal ul,.modal ol{padding-left:22px}
+.pill-row{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.pill{border:1px solid rgba(63,224,255,.4);background:rgba(63,224,255,.07);color:#bfefff;border-radius:20px;
+  padding:5px 13px;font-size:.8rem;font-family:var(--disp);letter-spacing:.04em}
+
+/* ---------- Banner, toast, float ---------- */
+#banner{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;z-index:120}
+#banner .bt{font-family:var(--disp);font-weight:700;font-size:clamp(1.8rem,6vw,3.4rem);color:var(--warn);
+  text-shadow:0 0 26px rgba(251,191,36,.65);opacity:0;transform:scale(.5);letter-spacing:.06em;text-align:center}
+#banner.show .bt{animation:bannerPop 1.5s ease forwards}
+@keyframes bannerPop{0%{opacity:0;transform:scale(.4)}18%{opacity:1;transform:scale(1.12)}30%{transform:scale(1)}75%{opacity:1}100%{opacity:0;transform:scale(1.05) translateY(-16px)}}
+#toasts{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);z-index:130;display:flex;flex-direction:column;gap:8px;align-items:center}
+.toast{background:#111c40;border:1px solid var(--cyan);color:var(--ink);padding:10px 20px;border-radius:8px;
+  font-size:.88rem;box-shadow:0 8px 24px rgba(0,0,0,.5);animation:slidein .3s}
+.float-xp{position:fixed;z-index:125;font-family:var(--disp);font-weight:700;color:var(--cyan);
+  text-shadow:0 0 12px rgba(63,224,255,.7);pointer-events:none;animation:rise 1.2s ease forwards}
+@keyframes rise{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(-60px)}}
+.paused-ic{font-size:3.4rem;text-align:center;display:block;margin-bottom:6px}
+
+/* ---------- Report / result ---------- */
+.report-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:12px 0}
+.rep{border:1px solid var(--line);border-radius:10px;padding:12px;text-align:center;background:#0c1534}
+.rep b{display:block;font-family:var(--disp);font-size:1.4rem;color:var(--cyan)}
+.rep span{font-size:.72rem;color:var(--mut);letter-spacing:.08em;text-transform:uppercase}
+.rank-title{font-family:var(--disp);font-size:clamp(1.4rem,4vw,2.2rem);color:var(--warn);text-align:center;
+  text-shadow:0 0 24px rgba(251,191,36,.4);letter-spacing:.05em;margin:8px 0}
+.teacher-table{width:100%;border-collapse:collapse;font-size:.82rem;margin-top:10px}
+.teacher-table th,.teacher-table td{border:1px solid var(--line);padding:7px 9px;text-align:left}
+.teacher-table th{font-family:var(--disp);font-size:.68rem;letter-spacing:.1em;color:var(--cyan);background:#0c1534}
+.teacher-table tr:hover td{background:rgba(63,224,255,.05)}
+
+/* ---------- Responsive ---------- */
+@media (max-width:900px){
+  .start-grid,.dash-grid,.l2-wrap,.listings,.form-grid{grid-template-columns:1fr}
+  .lvl-map{grid-template-columns:repeat(5,1fr)}
+  .dev-grid{grid-template-columns:repeat(3,1fr)}
+}
+@media (max-width:560px){
+  .opts{grid-template-columns:1fr}
+  .verdict{grid-template-columns:1fr}
+  .dev-grid{grid-template-columns:repeat(2,1fr)}
+  .badge-grid{grid-template-columns:repeat(2,1fr)}
+  #hud{position:static}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001s!important;transition-duration:.001s!important}
+}
+</style>
+</head>
+<body>
+
+<!-- ================= HUD ================= -->
+<header id="hud" class="hidden">
+  <div class="hud-logo">⚡ TECH GEAR <span>MISSION</span></div>
+  <div id="progTrack" title="Mission progress">
+    <div class="pseg" data-seg="1"><i></i></div><div class="pseg" data-seg="2"><i></i></div>
+    <div class="pseg" data-seg="3"><i></i></div><div class="pseg" data-seg="4"><i></i></div>
+    <div class="pseg" data-seg="5"><i></i></div>
+  </div>
+  <div class="hud-chips">
+    <span class="chip" id="hudLvl">LVL <b>1</b></span>
+    <span class="chip">XP <b id="hudXP">0</b></span>
+    <span class="chip">SCORE <b id="hudScore">0</b></span>
+    <span class="chip" id="hudLives">❤️❤️❤️</span>
+    <span class="chip">💡 <b id="hudHints">3</b></span>
+    <span class="chip hidden" id="hudCombo">🔥 x0</span>
+    <span class="chip hidden" id="hudTimer">⏱ 01:30</span>
+    <button class="icon-btn" id="btnSound" title="Sound on/off">🔊</button>
+    <button class="icon-btn" id="btnLC" title="Learning Corner">📚</button>
+    <button class="icon-btn" id="btnHint" title="Use a hint (−20 XP)">💡 HINT</button>
+    <button class="icon-btn" id="btnHome" title="Back to dashboard">🏠</button>
+  </div>
+</header>
+
+<main id="app">
+
+<!-- ================= START SCREEN ================= -->
+<section id="scrStart">
+  <div class="start-grid">
+    <div>
+      <div class="term">
+        <div class="term-bar"><i></i><i></i><i></i><span>TECHZONE // MISSION TERMINAL</span></div>
+        <div class="term-body" id="termLines"></div>
+      </div>
+      <div class="gear-strip" aria-hidden="true">
+        <div class="gear" title="Router">📡</div><div class="gear" title="Switch">🔀</div>
+        <div class="gear" title="UTP Cable">🔌</div><div class="gear" title="SSD">💾</div>
+        <div class="gear" title="RAM">🧠</div>
+      </div>
+      <h1 class="game-title">TECH GEAR <em>MISSION</em></h1>
+      <div class="game-sub">Become a Tech Copywriter</div>
+      <div class="game-sub" style="color:#8ea3d4">English Descriptive Text Adventure — Describing Computer &amp; Network Devices</div>
+      <p class="motto">“Can you describe technology clearly, accurately, and honestly?”</p>
+      <p style="margin-top:12px;font-size:.85rem;color:var(--mut)">Target: Kelas X Teknik Komputer dan Jaringan (TKJ) • Fase E • SMK</p>
+    </div>
+    <div class="card">
+      <span class="tag">Copywriter Registration</span>
+      <div style="margin-top:14px">
+        <div class="field"><label for="inName">Player Name / Nama Pemain</label>
+          <input id="inName" maxlength="30" placeholder="e.g. Rina Pratama" autocomplete="off"></div>
+        <div class="field"><label for="inClass">Class / Kelas</label>
+          <input id="inClass" maxlength="20" placeholder="e.g. X TKJ 1" autocomplete="off"></div>
+        <div class="mode-row">
+          <button class="mode-btn active" id="modeSolo">👤 SOLO MODE</button>
+          <button class="mode-btn" id="modeTeam">👥 TEAM MODE</button>
+        </div>
+        <div id="teamPanel" class="hidden">
+          <div class="field"><label for="inTeam">Team Name</label><input id="inTeam" maxlength="30" placeholder="e.g. Cyber Lions"></div>
+          <div class="field"><label>Members (up to 5)</label>
+            <input id="inM1" placeholder="Member 1 — Device Inspector" style="margin-bottom:6px">
+            <input id="inM2" placeholder="Member 2 — Data Recorder" style="margin-bottom:6px">
+            <input id="inM3" placeholder="Member 3 — Copywriter" style="margin-bottom:6px">
+            <input id="inM4" placeholder="Member 4 — Editor" style="margin-bottom:6px">
+            <input id="inM5" placeholder="Member 5 — Designer / Presenter">
+          </div>
+          <ul class="role-list">
+            <li><b>MEMBER 1</b> · Device Inspector — checks the hardware facts</li>
+            <li><b>MEMBER 2</b> · Data Recorder — records specs &amp; data</li>
+            <li><b>MEMBER 3</b> · Copywriter — writes the description</li>
+            <li><b>MEMBER 4</b> · Editor — checks grammar &amp; honesty</li>
+            <li><b>MEMBER 5</b> · Designer / Presenter — designs the catalog &amp; presents</li>
+          </ul>
+        </div>
+        <button class="btn big" id="btnStart" style="width:100%;margin-top:10px">▶ START MISSION</button>
+        <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+          <button class="btn ghost small" id="btnHow">❓ HOW TO PLAY</button>
+          <button class="btn ghost small" id="btnObj">🎯 LEARNING OBJECTIVES</button>
+          <button class="btn ghost small" id="btnSoundStart">🔊 SOUND ON</button>
+        </div>
+        <button class="btn ghost small hidden" id="btnContinueOld" style="margin-top:10px;width:100%">⏩ CONTINUE PREVIOUS MISSION</button>
+        <p style="font-size:.7rem;color:var(--mut);margin-top:12px">🔒 Data disimpan di browser ini (localStorage). Guru dapat melihat hasil lewat TEACHER MODE.</p>
+        <button class="btn ghost small" id="btnTeacher" style="margin-top:6px;font-size:.68rem;opacity:.8">🧑‍🏫 TEACHER MODE</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= DASHBOARD ================= -->
+<section id="scrDash" class="hidden">
+  <div class="dash-grid">
+    <div class="card">
+      <div class="avatar">🧑‍💻</div>
+      <h2 id="dashName" style="font-size:1.2rem">—</h2>
+      <div style="color:var(--mut);font-size:.85rem;margin-bottom:10px" id="dashClass">—</div>
+      <div id="dashTeamBox"></div>
+      <div class="stat-row"><span>Rank Path</span><b>Junior → Senior Copywriter</b></div>
+      <div class="stat-row"><span>XP Total</span><b id="dashXP">0</b></div>
+      <div class="stat-row"><span>Score</span><b id="dashScore">0</b></div>
+      <div class="stat-row"><span>Lives</span><b id="dashLives">❤️❤️❤️</b></div>
+      <div class="stat-row"><span>Hints left</span><b id="dashHints">3</b></div>
+      <div class="stat-row"><span>Accuracy</span><b id="dashAcc">—</b></div>
+      <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap">
+        <button class="btn" id="btnContinue">▶ CONTINUE MISSION</button>
+        <button class="btn ghost small" id="btnReset">↺ RESET SAVE</button>
+      </div>
+    </div>
+    <div>
+      <div class="card">
+        <span class="tag">Mission Map — TECHZONE Catalog Project</span>
+        <div class="lvl-map" id="lvlMap"></div>
+      </div>
+      <div class="card" style="margin-top:14px">
+        <span class="tag">Badges</span>
+        <div class="badge-grid" id="badgeGrid"></div>
+      </div>
+      <div class="card" style="margin-top:14px">
+        <span class="tag">Study Tools</span>
+        <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+          <button class="btn ghost small" onclick="openLC()">📚 LEARNING CORNER</button>
+          <button class="btn ghost small" onclick="openModal('modalHow')">❓ HOW TO PLAY</button>
+          <button class="btn ghost small" onclick="openModal('modalObj')">🎯 OBJECTIVES</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= LEVEL INTRO ================= -->
+<section id="scrIntro" class="hidden">
+  <div class="card" style="max-width:760px;margin:30px auto;text-align:center">
+    <div id="introIcon" style="font-size:3.2rem">🕵️</div>
+    <span class="tag" id="introTag">LEVEL 1</span>
+    <h2 id="introTitle" style="margin:8px 0 4px;font-size:1.7rem">MYSTERY GEAR</h2>
+    <p id="introGoal" style="color:#cfe3ff;max-width:560px;margin:8px auto"></p>
+    <p id="introGoalID" style="color:var(--mut);font-size:.85rem;max-width:560px;margin:0 auto"></p>
+    <div class="pill-row" style="justify-content:center" id="introPills"></div>
+    <button class="btn big" id="btnEnter" style="margin-top:14px">🚀 ENTER LEVEL</button>
+    <div><button class="btn ghost small" onclick="show('scrDash');renderDashboard()" style="margin-top:12px">← Back to Dashboard</button></div>
+  </div>
+</section>
+
+<!-- ================= LEVEL PLAY AREA ================= -->
+<section id="scrLevel" class="hidden">
+  <div class="level-head">
+    <div><h2 id="lvlTitle">LEVEL</h2><div class="sub" id="lvlSub"></div></div>
+    <div id="lvlHeadRight"></div>
+  </div>
+  <div id="lvlBody"></div>
+</section>
+
+<!-- ================= FINAL RESULT ================= -->
+<section id="scrFinal" class="hidden"></section>
+
+<!-- ================= TEACHER MODE ================= -->
+<section id="scrTeacher" class="hidden">
+  <div class="card">
+    <span class="tag">Teacher Mode — Results Monitor</span>
+    <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap">
+      <button class="btn small" id="btnExport">⬇ EXPORT RESULT (CSV)</button>
+      <button class="btn ghost small" id="btnBackTeacher">← BACK</button>
+      <button class="btn ghost small" id="btnClearArch" style="color:var(--bad)">🗑 CLEAR ARCHIVE</button>
+    </div>
+    <div id="teacherBody" style="margin-top:14px;overflow-x:auto"></div>
+  </div>
+</section>
+
+</main>
+
+<!-- ================= OVERLAYS ================= -->
+<div class="overlay hidden" id="pauseOverlay">
+  <div class="modal" style="max-width:460px;text-align:center">
+    <span class="paused-ic">⏸️</span>
+    <h3 style="text-align:center">MISSION PAUSED</h3>
+    <p>You ran out of lives. Don't worry — your progress is safe. Take a breath, review the material, and jump back in!</p>
+    <p class="id" style="color:var(--mut);font-size:.82rem;margin-top:6px">Nyawa habis. Progresmu tetap tersimpan. Coba lagi setelah belajar sebentar!</p>
+    <div style="display:flex;gap:10px;justify-content:center;margin-top:16px;flex-wrap:wrap">
+      <button class="btn" id="btnTryAgain">🔄 TRY AGAIN (lives refilled, −50 score)</button>
+      <button class="btn violet" id="btnReview">📚 REVIEW MATERIAL</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay hidden" id="lcOverlay">
+  <div class="modal">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <h3>📚 LEARNING CORNER</h3>
+      <button class="icon-btn" onclick="closeLC()">✕</button>
+    </div>
+    <h4>DESCRIPTIVE TEXT — Generic Structure</h4>
+    <ol><li><b>Identification</b> — introduce the object (what it is).</li>
+        <li><b>Description</b> — describe its features, parts, and function.</li></ol>
+    <h4>USEFUL LANGUAGE</h4>
+    <div class="pill-row"><span class="pill">It is …</span><span class="pill">It has …</span><span class="pill">It comes with …</span>
+      <span class="pill">It supports …</span><span class="pill">It is equipped with …</span><span class="pill">It is made of …</span></div>
+    <h4>ADJECTIVES</h4>
+    <div class="pill-row"><span class="pill">compact</span><span class="pill">slim</span><span class="pill">lightweight</span>
+      <span class="pill">durable</span><span class="pill">reliable</span><span class="pill">high-speed</span>
+      <span class="pill">portable</span><span class="pill">stable</span><span class="pill">powerful</span></div>
+    <h4>TECHNICAL VOCABULARY</h4>
+    <div class="pill-row"><span class="pill">LAN port</span><span class="pill">antenna</span><span class="pill">storage capacity</span>
+      <span class="pill">transfer speed</span><span class="pill">bandwidth</span><span class="pill">compatible</span><span class="pill">warranty</span></div>
+    <h4>UNITS</h4>
+    <div class="pill-row"><span class="pill">GHz</span><span class="pill">Mbps</span><span class="pill">GB</span><span class="pill">MB/s</span></div>
+    <h4>HONESTY RULE 🤝</h4>
+    <p>Informative writing uses <b>facts and numbers</b>. Claims like “the best in the world” or “never breaks” are <b>exaggerated</b> unless there is real evidence. A good copywriter never tricks the buyer.</p>
+    <div style="text-align:center;margin-top:14px"><button class="btn" onclick="closeLC()">GOT IT!</button></div>
+  </div>
+</div>
+
+<div class="overlay hidden" id="modalHow">
+  <div class="modal">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <h3>❓ HOW TO PLAY</h3><button class="icon-btn" onclick="closeModal('modalHow')">✕</button></div>
+    <ol style="margin-top:8px">
+      <li>Complete <b>5 levels</b> to become a Senior Tech Copywriter for TECHZONE.</li>
+      <li>Each correct answer gives <b>XP + Score</b>. Watch the XP cap per level!</li>
+      <li>You have <b>❤️ 3 lives</b>. Wrong answers cost 1 life. At 0 lives → Mission Paused (progress is NOT deleted).</li>
+      <li>You have <b>💡 3 hints</b>. Each hint costs 20 XP.</li>
+      <li>Answer 3 in a row → <b>COMBO x3</b> bonus. 5 in a row → <b>SUPER COMBO x5</b>. No mistakes in a level → <b>PERFECT LEVEL</b>!</li>
+      <li>Keyboard: press <b>1–4</b> to answer multiple choice. All buttons work with Tab + Enter.</li>
+      <li>Level 2 has a <b>90-second timer</b>. Level 5 checks your writing word count (50–100 words).</li>
+    </ol>
+    <div style="text-align:center;margin-top:14px"><button class="btn" onclick="closeModal('modalHow')">READY!</button></div>
+  </div>
+</div>
+
+<div class="overlay hidden" id="modalObj">
+  <div class="modal">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <h3>🎯 LEARNING OBJECTIVES</h3><button class="icon-btn" onclick="closeModal('modalObj')">✕</button></div>
+    <p style="margin:8px 0">Setelah bermain, kamu diharapkan mampu:</p>
+    <ol>
+      <li>Mengenali nama perangkat komputer &amp; jaringan dalam bahasa Inggris.</li>
+      <li>Menjelaskan fungsi perangkat menggunakan bahasa Inggris.</li>
+      <li>Mengidentifikasi adjective untuk mendeskripsikan benda.</li>
+      <li>Menggunakan noun phrase dalam deskripsi perangkat.</li>
+      <li>Menggunakan simple present tense dengan benar.</li>
+      <li>Mengidentifikasi bentuk, ukuran, warna, bahan, spesifikasi, fungsi, konektivitas, isi kemasan, dan garansi.</li>
+      <li>Membedakan product description informatif dengan yang berlebihan/menyesatkan.</li>
+      <li>Mengevaluasi kualitas sebuah product listing.</li>
+      <li>Menyusun product description sederhana yang informatif, menarik, dan jujur.</li>
+      <li>Melatih critical thinking, creativity, communication, collaboration, dan kejujuran.</li>
+    </ol>
+    <div style="text-align:center;margin-top:14px"><button class="btn" onclick="closeModal('modalObj')">UNDERSTOOD!</button></div>
+  </div>
+</div>
+
+<div id="banner"><div class="bt" id="bannerText"></div></div>
+<div id="toasts" aria-live="polite"></div>
+
+<script>
+'use strict';
+/* ================================================================
+   TECH GEAR MISSION — GAME ENGINE
+   ---------------------------------------------------------------
+   GURU: semua soal ada di bagian DATA BANK di bawah.
+   Silakan tambah/ubah soal di array-object tersebut.
+   ================================================================ */
+
+/* ================= UTILITIES ================= */
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+function fmtTime(s){const m=Math.floor(s/60),x=s%60;return String(m).padStart(2,'0')+':'+String(x).padStart(2,'0');}
+function safeSet(k,v){try{localStorage.setItem(k,v);}catch(e){}}
+function safeGet(k){try{return localStorage.getItem(k);}catch(e){return null;}}
+
+/* ================= SOUND (Web Audio, tanpa file eksternal) ================= */
+let AC=null;
+function ac(){ if(!AC){try{AC=new (window.AudioContext||window.webkitAudioContext)();}catch(e){}} if(AC&&AC.state==='suspended')AC.resume(); return AC; }
+function tone(f,d,type,g,t){ if(!state||!state.soundOn)return; try{const c=ac();if(!c)return;
+  const o=c.createOscillator(),v=c.createGain();o.type=type||'sine';o.frequency.value=f;
+  v.gain.setValueAtTime(g||0.12,c.currentTime+(t||0));
+  v.gain.exponentialRampToValueAtTime(0.0001,c.currentTime+(t||0)+d);
+  o.connect(v);v.connect(c.destination);o.start(c.currentTime+(t||0));o.stop(c.currentTime+(t||0)+d);}catch(e){} }
+const sfx={
+  click(){tone(660,.06,'square',.05);},
+  correct(){tone(523,.12,'triangle',.14,0);tone(659,.12,'triangle',.14,.1);tone(784,.2,'triangle',.14,.2);},
+  wrong(){tone(196,.25,'sawtooth',.12,0);tone(147,.3,'sawtooth',.1,.12);},
+  combo(){tone(880,.08,'square',.1,0);tone(1175,.08,'square',.1,.08);tone(1568,.18,'square',.1,.16);},
+  level(){tone(523,.14,'triangle',.14,0);tone(659,.14,'triangle',.14,.13);tone(784,.14,'triangle',.14,.26);tone(1047,.35,'triangle',.16,.4);},
+  badge(){tone(784,.1,'triangle',.13,0);tone(988,.1,'triangle',.13,.1);tone(1319,.3,'triangle',.13,.2);}
+};
+
+/* ================================================================
+   DATA BANK — GURU DAPAT MENGEDIT BAGIAN INI
+   ================================================================ */
+
+/* ---------- LEVEL 1: Mystery Gear (bank soal; 10 diambil acak) ---------- */
+const L1_DEVICES=['Router','Network Switch','UTP Cable','SSD','RAM'];
+const L1_BANK=[
+ {a:'Router',clues:['It connects a local network to the Internet.','It usually has antennas.','It can support 2.4 GHz and 5 GHz Wi-Fi.','It has WAN and LAN ports.'],
+  exp:'A router connects a local network to other networks, including the Internet. (Router menghubungkan jaringan lokal ke internet.)'},
+ {a:'Network Switch',clues:['It connects several computers in one LAN.','It has many ports, for example 5, 8, or 16.','It sends data only to the correct destination port.','You plug UTP cables into it.'],
+  exp:'A switch connects several devices in one LAN through its ports. (Switch menghubungkan banyak perangkat dalam satu LAN.)'},
+ {a:'UTP Cable',clues:['It carries data between network devices.','It has RJ45 connectors at both ends.','Cat5e and Cat6 are common types.','Inside it, there are twisted pairs of copper wire.'],
+  exp:'A UTP/Ethernet cable carries data between network devices and uses RJ45 connectors. (Kabel UTP membawa data antar perangkat jaringan.)'},
+ {a:'SSD',clues:['It stores data using flash memory.','It has no moving parts, so it is fast and quiet.','Common capacities are 256 GB and 512 GB.','It can use a SATA or NVMe interface.'],
+  exp:'An SSD stores data on flash memory with no moving parts, so it is fast. (SSD menyimpan data dengan flash memory.)'},
+ {a:'RAM',clues:['It temporarily stores data used by running programs.','Its data disappears when the computer turns off.','More of it helps you open more apps smoothly.','It plugs into slots on the mainboard.'],
+  exp:'RAM temporarily stores data for running programs. Its content is lost when power is off. (RAM menyimpan data sementara.)'},
+ {a:'Router',clues:['Homes and small offices use it to share one Internet connection.','It can create a wireless network for phones and laptops.','Its WAN port connects to the modem from your ISP.'],
+  exp:'Routers share one Internet connection with many devices, often through Wi-Fi.'},
+ {a:'Network Switch',clues:['It is the “traffic manager” of a LAN.','It is faster and smarter than a hub.','An 8-port version connects eight devices at once.'],
+  exp:'A switch forwards data intelligently to the right port, unlike a hub.'},
+ {a:'UTP Cable',clues:['Technicians crimp it with a special tool.','Straight-through and crossover are its wiring styles.','It is the most common cable inside a LAN.'],
+  exp:'UTP cables are crimped with RJ45 connectors and are very common in LANs.'},
+ {a:'SSD',clues:['It makes a computer boot much faster than a classic hard disk.','It is slim, light, and often 2.5-inch in size.','It reads and writes data at hundreds of MB/s.'],
+  exp:'An SSD speeds up booting and file access compared to a mechanical hard disk.'},
+ {a:'RAM',clues:['It is measured in GB, for example 8 GB or 16 GB.','DDR4 and DDR5 are common generations.','Your programs run faster when it is bigger.'],
+  exp:'Bigger RAM lets the computer handle more running programs at once.'},
+ {a:'Router',clues:['You can configure it through a web admin page.','It directs data packets between different networks.','Many models include a built-in Wi-Fi access point.'],
+  exp:'Routers direct packets between networks and are configured via an admin page.'},
+ {a:'Network Switch',clues:['It learns MAC addresses to forward data correctly.','Rack-mounted versions can have 24 or 48 ports.','It is a core device in office LAN wiring.'],
+  exp:'Switches learn MAC addresses so frames reach the correct device.'}
+];
+
+/* ---------- LEVEL 2: Device Inspector (kategori informasi) ---------- */
+const L2_CATS=['Shape & Size','Color & Material','Technical Specifications','Function & Connectivity','Package & Warranty'];
+const L2_ITEMS=[
+ {t:'512 GB',c:'Technical Specifications'},
+ {t:'Silver',c:'Color & Material'},
+ {t:'2.5-inch',c:'Shape & Size'},
+ {t:'SATA III interface',c:'Function & Connectivity'},
+ {t:'3-year warranty',c:'Package & Warranty'},
+ {t:'Slim and rectangular',c:'Shape & Size'},
+ {t:'Made of lightweight aluminum',c:'Color & Material'},
+ {t:'Reads up to 550 MB/s',c:'Technical Specifications'},
+ {t:'Connects to Wi-Fi 6 networks',c:'Function & Connectivity'},
+ {t:'Includes a mounting bracket',c:'Package & Warranty'},
+ {t:'8 Gigabit LAN ports',c:'Technical Specifications'},
+ {t:'Dual-band 2.4 GHz / 5 GHz',c:'Technical Specifications'},
+ {t:'Black with a matte finish',c:'Color & Material'},
+ {t:'Compatible with most laptops',c:'Function & Connectivity'},
+ {t:'One UTP cable inside the box',c:'Package & Warranty'},
+ {t:'About 12 cm long',c:'Shape & Size'}
+];
+
+/* ---------- LEVEL 3: Tech Detective — 4 mini-games ---------- */
+const L3_DATA={
+/* GAME A: klik adjective dalam kalimat */
+adj:[
+ {s:['The','SSD','is','slim','and','lightweight.'],ok:['slim','lightweight.'],
+  exp:'“Slim” and “lightweight” describe the SSD. Adjectives describe nouns. (Adjective menjelaskan kata benda.)'},
+ {s:['This','wireless','router','is','very','compact.'],ok:['wireless','compact.'],
+  exp:'“Wireless” and “compact” describe the router. “Very” is an adverb, not an adjective.'},
+ {s:['The','durable','cable','has','a','strong','jacket.'],ok:['durable','strong'],
+  exp:'“Durable” and “strong” tell us the quality of the cable and its jacket.'},
+ {s:['Our','school','network','is','fast','and','stable.'],ok:['fast','stable.'],
+  exp:'“Fast” and “stable” describe the network after the verb “is”.'},
+ {s:['It','is','a','powerful','switch','for','small','offices.'],ok:['powerful','small'],
+  exp:'“Powerful” describes the switch; “small” describes the offices.'}
+],
+/* GAME B: susun noun phrase dengan klik kata berurutan */
+np:[
+ {w:['a','compact','dual-band','wireless','router'],a:'a compact dual-band wireless router',
+  exp:'Order: article → size/shape → feature → type → noun. “a compact dual-band wireless router”.'},
+ {w:['a','slim','2.5-inch','SATA','SSD'],a:'a slim 2.5-inch SATA SSD',
+  exp:'Adjectives come before the noun: “a slim 2.5-inch SATA SSD”.'},
+ {w:['a','fast','Gigabit','network','switch'],a:'a fast Gigabit network switch',
+  exp:'“Fast” and “Gigabit” describe the “network switch”.'},
+ {w:['a','long','blue','UTP','cable'],a:'a long blue UTP cable',
+  exp:'Size before color: “a long blue UTP cable”.'},
+ {w:['an','8 GB','DDR4','RAM','module'],a:'an 8 GB DDR4 RAM module',
+  exp:'Use “an” before a vowel sound: “an 8 GB DDR4 RAM module”.'}
+],
+/* GAME C: perbaiki simple present */
+fix:[
+ {s:'The switch ____ eight ports.',o:['have','has','having','is have'],a:1,
+  exp:'“The switch” is singular (it), so we use “has”. (Subjek tunggal → has.)'},
+ {s:'A router ____ different networks together.',o:['connect','connects','connecting','is connect'],a:1,
+  exp:'Singular subject “a router” → verb + s: “connects”.'},
+ {s:'This SSD ____ data very fast.',o:['read','reads','reading','is reads'],a:1,
+  exp:'“This SSD” = it → “reads”. Watch the -s in simple present!'},
+ {s:'The UTP cables ____ in a neat box.',o:['is','are','be','am'],a:1,
+  exp:'“Cables” is plural → “are”. (Jamak → are.)'},
+ {s:'It ____ with most laptops.',o:['work','works','working','is work'],a:1,
+  exp:'“It” → “works”. Simple present adds -s for he/she/it.'}
+],
+/* GAME D: susun kalimat lengkap */
+sb:[
+ {w:['The','router','has','four','Gigabit','LAN','ports.'],a:'The router has four Gigabit LAN ports.',
+  exp:'Pattern: Subject + has + object. “The router has four Gigabit LAN ports.”'},
+ {w:['The','switch','connects','many','computers.'],a:'The switch connects many computers.',
+  exp:'Subject + verb + object: “The switch connects many computers.”'},
+ {w:['This','SSD','is','slim','and','lightweight.'],a:'This SSD is slim and lightweight.',
+  exp:'Subject + is + adjectives: “This SSD is slim and lightweight.”'},
+ {w:['The','cable','has','RJ45','connectors.'],a:'The cable has RJ45 connectors.',
+  exp:'“The cable has RJ45 connectors.” — cable = it → has.'},
+ {w:['RAM','stores','data','temporarily.'],a:'RAM stores data temporarily.',
+  exp:'“RAM stores data temporarily.” Simple present for facts.'}
+]};
+
+/* ---------- LEVEL 4: Listing Battle (HOTS) ---------- */
+const L4_LISTING1=`CHEAP SSD!!! Very good! Very fast! Very strong! The best SSD in the world! Buy now!!!`;
+const L4_LISTING2=`Nova S500 SATA SSD – 512 GB\n\nThe Nova S500 is a slim 2.5-inch solid-state drive for laptops and desktop PCs. It is silver and made of lightweight aluminum. It has a storage capacity of 512 GB and reads data at up to 550 MB/s. It uses a SATA III connection and is compatible with most laptops. The package includes one SSD and one mounting bracket. Warranty: 3 years.`;
+const L4_TASKS=[
+ {kind:'mc',q:'1. Which listing provides more SPECIFIC information?',
+  o:['Listing 1','Listing 2'],a:1,
+  exp:'Listing 2 gives exact numbers: 512 GB, 550 MB/s, SATA III, 3-year warranty.'},
+ {kind:'mc',q:'2. Which listing includes TECHNICAL SPECIFICATIONS?',
+  o:['Listing 1','Listing 2'],a:1,
+  exp:'Listing 2 contains capacity, speed, interface, size, and warranty — real specs.'},
+ {kind:'mc',q:'3. Which listing contains an EXAGGERATED claim?',
+  o:['Listing 1 — “The best SSD in the world!”','Listing 2 — “compatible with most laptops”'],a:0,
+  exp:'“The best in the world” is a big claim with zero evidence. That is exaggeration.'},
+ {kind:'multi',q:'4. Which information is MISSING from Listing 1? (Select all that apply)',
+  o:[{t:'Storage capacity (e.g. 512 GB)',ok:true},{t:'Read speed (MB/s)',ok:true},
+     {t:'Interface / connection type',ok:true},{t:'Warranty period',ok:true},
+     {t:'The words “very good”',ok:false},{t:'An excited tone',ok:false}],
+  exp:'Listing 1 has emotion but no data: no capacity, speed, interface, or warranty.'},
+ {kind:'short',q:'5. How can the claim “The best SSD in the world!” be improved into an honest statement? (Short answer — write 1 sentence)',
+  keys:['specific','number','data','evidence','fact','detail','speed','capacity','test','measure','proof','benchmark','spesifik','angka','bukti','fakta','kecepatan','kapasitas','detail'],
+  model:'Replace the claim with facts, for example: “It reads data at up to 550 MB/s.” — Ganti klaim dengan fakta yang bisa dibuktikan.'},
+ {kind:'claim',q:'CLAIM EVALUATOR — Context: Nova S500 SATA SSD · 512 GB · SATA III · reads up to 550 MB/s · 2.5-inch aluminum · compatible with most laptops · 3-year warranty.'}
+];
+const L4_CLAIMS=[
+ {c:'“It reads data at up to 550 MB/s.”',a:0,
+  exp:'The listing states 550 MB/s, so this claim is supported by evidence.'},
+ {c:'“It is the best SSD ever made.”',a:2,
+  exp:'“Best ever” cannot be proven here — it is an exaggerated claim.'},
+ {c:'“It can make every old laptop feel brand new.”',a:1,
+  exp:'Possible, but it depends on each laptop. Without test data, it needs evidence.'},
+ {c:'“It comes with a 3-year warranty.”',a:0,
+  exp:'The warranty is written in the listing, so it is supported.'},
+ {c:'“It never breaks, even if you drop it.”',a:2,
+  exp:'Nothing “never breaks”. This is an exaggerated, unsafe promise.'}
+];
+
+/* ---------- LEVEL 5: kosakata untuk validasi ---------- */
+const ADJ_WORDS=['slim','compact','lightweight','durable','reliable','fast','portable','stable','powerful','small','thin','solid','strong','modern','flat','quiet','large','mini','high-speed','light'];
+const TECH_WORDS=['port','antenna','capacity','speed','bandwidth','compatible','warranty','gb','mb/s','ghz','mbps','lan','wan','wi-fi','wifi','sata','nvme','rj45','ddr','ethernet','gigabit','dual-band','dual band','connector','slot','cat6','cat5e','wireless','network','router','switch','ssd','ram','utp','cable','storage','interface'];
+const FUNC_WORDS=['connects','stores','transfers','sends','carries','links','shares','provides','delivers','reads','writes','supports','links','joins'];
+const BEN_WORDS=['suitable','perfect','ideal','great','because','so that','helps','allows','makes','for','useful','best choice','recommended'];
+const STARTERS=['it is','it has','it comes with','it supports','the package includes','suitable for','it uses','it works'];
+const RED_FLAGS=['best in the world','the best','fastest in the world','number one','no. 1','100%','never breaks','never fails','guaranteed to make','unbreakable','cheapest in the world','perfect for everyone'];
+const DEVICES=[
+ {n:'Router',ic:'📡',cat:'network device'},
+ {n:'Network Switch',ic:'🔀',cat:'network device'},
+ {n:'UTP Cable',ic:'🔌',cat:'network cable'},
+ {n:'SSD',ic:'💾',cat:'storage device'},
+ {n:'RAM',ic:'🧠',cat:'memory module'}
+];
+const BADGES={1:'🔎 Gear Detective',2:'🛠 Device Inspector',3:'🧠 Tech Detective',4:'⚔ Listing Challenger',5:'✍ Tech Copywriter',final:'🏆 Senior Tech Copywriter'};
+const CAP={1:1000,2:1000,3:1000,4:1500,5:2000};
+const MAXSCORE=450; /* L1:100 + L2:70 + L3:80 + L4:100 + L5:100 */
+const SAVE_KEY='tgm_save_v1', ARCH_KEY='tgm_archive_v1';
+
+/* ================= STATE ================= */
+let state=null, L2Timer=null, termTimer=null;
+function freshState(){return{
+  name:'',kelas:'',mode:'solo',teamName:'',members:[],
+  soundOn:true,started:false,finished:false,
+  level:1,xp:0,score:0,lives:3,hints:3,combo:0,bestCombo:0,
+  badges:[],done:{},levelXP:{},gc:0,gw:0,
+  product:null,rubric:null,reflection:null,sessionId:Date.now()
+};}
+function save(){safeSet(SAVE_KEY,JSON.stringify(state));}
+function loadSave(){try{const s=safeGet(SAVE_KEY);return s?JSON.parse(s):null;}catch(e){return null;}}
+function getArchive(){try{return JSON.parse(safeGet(ARCH_KEY)||'[]');}catch(e){return [];}}
+function setArchive(a){safeSet(ARCH_KEY,JSON.stringify(a));}
+
+/* ================= UI CORE ================= */
+function show(id){$$('main > section').forEach(s=>s.classList.add('hidden'));$('#'+id).classList.remove('hidden');
+  $('#hud').classList.toggle('hidden',!(state&&state.started&&['scrDash','scrIntro','scrLevel','scrFinal'].includes(id)));
+  window.scrollTo({top:0,behavior:'smooth'});}
+function openModal(id){$('#'+id).classList.remove('hidden');sfx.click();}
+function closeModal(id){$('#'+id).classList.add('hidden');}
+function openLC(){$('#lcOverlay').classList.remove('hidden');sfx.click();}
+function closeLC(){$('#lcOverlay').classList.add('hidden');}
+function toast(msg){const t=document.createElement('div');t.className='toast';t.textContent=msg;$('#toasts').appendChild(t);
+  setTimeout(()=>{t.style.opacity='0';t.style.transition='opacity .4s';setTimeout(()=>t.remove(),400);},2600);}
+function banner(txt,color){const b=$('#banner');$('#bannerText').textContent=txt;
+  $('#bannerText').style.color=color||'var(--warn)';
+  b.classList.remove('show');void b.offsetWidth;b.classList.add('show');}
+function floatXP(txt){const el=document.createElement('div');el.className='float-xp';el.textContent=txt;
+  const r=$('#hudXP').getBoundingClientRect();el.style.left=(r.left-8)+'px';el.style.top=(r.bottom+6)+'px';
+  document.body.appendChild(el);setTimeout(()=>el.remove(),1200);}
+
+function updateHUD(){
+  if(!state)return;
+  $('#hudXP').textContent=state.xp; $('#hudScore').textContent=state.score;
+  $('#hudLives').textContent='❤️'.repeat(Math.max(0,state.lives))+'🖤'.repeat(Math.max(0,3-state.lives));
+  $('#hudHints').textContent=state.hints;
+  $('#hudLvl').innerHTML='LVL <b>'+state.level+'</b> / 5';
+  const combo=$('#hudCombo');
+  if(state.combo>=2){combo.classList.remove('hidden');combo.textContent='🔥 x'+state.combo;}else combo.classList.add('hidden');
+  $('#btnSound').textContent=state.soundOn?'🔊':'🔇';
+  $$('.pseg').forEach(seg=>{const n=+seg.dataset.seg;
+    seg.classList.toggle('done',!!(state.done[n]));
+    seg.querySelector('i').style.width=(n===state.level&&!state.done[n]&&state.started)?(window.__segFrac?Math.round(window.__segFrac()*100):8)+'%':(state.done[n]?'100%':'0%');
+  });
+}
+function setSegFrac(f){window.__segFrac=()=>Math.min(1,Math.max(0.04,f));updateHUD();}
+function award(xp,sc){
+  xp=xp||0;sc=sc||0;
+  const cap=CAP[state.level]||99999, cur=state.levelXP[state.level]||0;
+  const add=Math.max(0,Math.min(xp,cap-cur));
+  state.levelXP[state.level]=cur+add; state.xp+=add;
+  if(sc>0)state.score+=sc; if(sc<0)state.score=Math.max(0,state.score+sc);
+  if(add>0)floatXP('+'+add+' XP');
+  updateHUD();save(); return add;
+}
+function onCorrectCombo(){
+  state.combo++;state.gc++;
+  if(state.combo>state.bestCombo)state.bestCombo=state.combo;
+  if(state.combo===3){banner('⚡ COMBO x3!');award(15,0);sfx.combo();}
+  else if(state.combo===5){banner('🌟 SUPER COMBO x5!','#3fe0ff');award(30,0);sfx.combo();}
+  updateHUD();save();
+}
+function onWrongLife(){state.combo=0;state.gw++;state.lives--;updateHUD();save();sfx.wrong();
+  if(state.lives<=0){setTimeout(()=>$('#pauseOverlay').classList.remove('hidden'),700);}}
+function fbHTML(good,title,body,id){
+  return '<div class="fb '+(good?'good':'bad')+'" role="status"><h4>'+(good?'✔ ':'✘ ')+title+'</h4><p>'+body+'</p>'+
+    (id?'<p class="id">'+id+'</p>':'')+'</div>';}
+
+/* ================= START SCREEN ================= */
+function typeTerminal(){
+  const lines=[
+    '>> INCOMING TRANSMISSION FROM <b>TECHZONE STORE</b> …',
+    '>> Catalog status: <b>0 English descriptions</b>. Customers are confused.',
+    '>> Mission: hire a <b>Junior Tech Copywriter</b> to fix it.',
+    '>> Write descriptions that are <b>clear, accurate, and honest</b>.',
+    '>> 5 levels await. Good luck, copywriter. <b>END OF BRIEF.</b>'];
+  const box=$('#termLines');box.innerHTML='';let i=0;
+  clearInterval(termTimer);
+  termTimer=setInterval(()=>{
+    if(i>=lines.length){clearInterval(termTimer);return;}
+    const d=document.createElement('div');d.className='ln'+(i===lines.length-1?' cursor':'');d.innerHTML=lines[i];
+    box.appendChild(d);i++;
+  },850);
+}
+function initStart(){
+  const old=loadSave();
+  if(old){ $('#inName').value=old.name||''; $('#inClass').value=old.kelas||'';
+    if(old.started&&!old.finished)$('#btnContinueOld').classList.remove('hidden'); }
+  $('#btnSoundStart').textContent=(state&&state.soundOn===false)?'🔇 SOUND OFF':'🔊 SOUND ON';
+  typeTerminal();
+}
+$('#btnHow').onclick=()=>openModal('modalHow');
+$('#btnObj').onclick=()=>openModal('modalObj');
+$('#btnSoundStart').onclick=function(){ 
+  if(!state)state=freshState(); state.soundOn=!state.soundOn;
+  this.textContent=state.soundOn?'🔊 SOUND ON':'🔇 SOUND OFF';save();sfx.click();};
+$('#modeSolo').onclick=()=>{ $('#modeSolo').classList.add('active');$('#modeTeam').classList.remove('active');$('#teamPanel').classList.add('hidden');sfx.click();};
+$('#modeTeam').onclick=()=>{ $('#modeTeam').classList.add('active');$('#modeSolo').classList.remove('active');$('#teamPanel').classList.remove('hidden');sfx.click();};
+$('#btnTeacher').onclick=()=>openTeacher();
+$('#btnContinueOld').onclick=()=>{state=loadSave();afterLogin();};
+$('#btnStart').onclick=()=>{
+  const n=$('#inName').value.trim(), k=$('#inClass').value.trim();
+  if(!n||!k){toast('⚠ Please fill in your name and class first! (Isi nama & kelas dulu ya.)');sfx.wrong();return;}
+  state=freshState(); state.name=n; state.kelas=k; state.started=true;
+  if($('#modeTeam').classList.contains('active')){
+    state.mode='team'; state.teamName=$('#inTeam').value.trim()||'Unnamed Team';
+    state.members=['inM1','inM2','inM3','inM4','inM5'].map(id=>$('#'+id).value.trim()).filter(Boolean);
+  }
+  save(); ac(); sfx.level(); afterLogin();
+};
+function afterLogin(){ show('scrDash'); renderDashboard(); toast('Welcome to TECHZONE, '+state.name+'! 🚀'); }
+
+/* ================= DASHBOARD ================= */
+function renderDashboard(){
+  $('#dashName').textContent=state.name; 
+  $('#dashClass').textContent='Class: '+state.kelas+' · '+(state.mode==='team'?'👥 TEAM MODE':'👤 SOLO MODE');
+  let tb='';
+  if(state.mode==='team'){const roles=['Device Inspector','Data Recorder','Copywriter','Editor','Designer / Presenter'];
+    tb='<div class="stat-row"><span>Team</span><b>'+ (state.teamName||'-') +'</b></div>'+
+      state.members.map((m,i)=>'<div class="stat-row"><span>'+m+'</span><b style="font-size:.72rem">'+roles[i]+'</b></div>').join('');}
+  $('#dashTeamBox').innerHTML=tb;
+  $('#dashXP').textContent=state.xp; $('#dashScore').textContent=state.score;
+  $('#dashLives').textContent='❤️'.repeat(Math.max(0,state.lives))+'🖤'.repeat(Math.max(0,3-state.lives));
+  $('#dashHints').textContent=state.hints;
+  const tot=state.gc+state.gw; $('#dashAcc').textContent=tot?Math.round(state.gc/tot*100)+'%':'—';
+  /* mission map */
+  const names=['MYSTERY GEAR','DEVICE INSPECTOR','TECH DETECTIVE','LISTING BATTLE','PRODUCT CREATOR'];
+  const icons=['🕵️','🛠️','🔍','⚔️','✍️'];
+  $('#lvlMap').innerHTML=[1,2,3,4,5].map(n=>{
+    const st=state.done[n]?'done':(n===state.level?'current':(n<state.level?'done':'locked'));
+    return '<div class="lvl-node '+st+'"><span class="ic">'+(st==='done'?'✅':icons[n-1])+(st==='locked'?' 🔒':'')+'</span>'+
+      '<span class="nm">L'+n+' · '+names[n-1]+'</span></div>';}).join('');
+  /* badges */
+  const all=[1,2,3,4,5,'final'];
+  $('#badgeGrid').innerHTML=all.map(b=>{
+    const won=state.badges.includes(b===('final')?'final':String(b));
+    return '<div class="badge '+(won?'won':'locked')+'"><span class="em">'+BADGES[b].split(' ')[0]+'</span>'+
+      '<span class="nm">'+BADGES[b].split(' ').slice(1).join(' ')+'</span></div>';}).join('');
+  $('#btnContinue').textContent=state.finished?'🏁 VIEW FINAL RESULT':(state.level>1?'▶ CONTINUE LEVEL '+state.level:'▶ START LEVEL 1');
+  updateHUD();
+}
+$('#btnContinue').onclick=()=>{ sfx.click();
+  if(state.finished){renderFinal();show('scrFinal');} else openIntro(state.level); };
+$('#btnReset').onclick=()=>{ if(confirm('Reset all progress? (Hapus semua progres di browser ini?)')){ 
+  try{localStorage.removeItem(SAVE_KEY);}catch(e){} location.reload(); } };
+
+/* ================= LEVEL FLOW ================= */
+const INTRO={
+ 1:{ic:'🕵️',t:'MYSTERY GEAR',g:'Five mystery devices are hiding in the TECHZONE warehouse. Read the English clues one by one and identify each device!',
+    id:'Baca clue berbahasa Inggris dan tebak perangkatnya. Jawaban benar +100 XP, salah kehilangan 1 nyawa.',
+    pills:['📦 10 mystery items','⏱ No time limit','💯 +100 XP / correct','❤️ Wrong = −1 life']},
+ 2:{ic:'🛠️',t:'DEVICE INSPECTOR',g:'Sort the product information chips into the right category before time runs out. Drag and drop, or click a chip then click a category.',
+    id:'Kelompokkan informasi produk ke kategori yang benar. Seret (drag) atau klik item lalu klik kategori. Waktu 90 detik!',
+    pills:['🗂 16 chips','⏱ 90 seconds','💯 +50 XP / correct','⚠ Wrong = −20 score']},
+ 3:{ic:'🔍',t:'TECH DETECTIVE',g:'Four mini-games to sharpen your English: Adjective Hunt, Noun Phrase Builder, Simple Present Fixer, and Sentence Builder.',
+    id:'Empat mini-game: mencari adjective, menyusun noun phrase, memperbaiki simple present, dan menyusun kalimat.',
+    pills:['🎮 4 mini-games','🧩 20 challenges','💯 +62 XP / correct','❤️ Wrong = −1 life']},
+ 4:{ic:'⚔️',t:'LISTING BATTLE',g:'Two product listings enter the arena. Analyze them like a pro: find facts, spot exaggeration, and judge every claim. This is a critical thinking mission!',
+    id:'Bandingkan dua listing produk. Temukan fakta, klaim berlebihan, dan nilai setiap pernyataan. Soal terakhir: jawaban singkat (esai pendek).',
+    pills:['📊 2 listings','❓ 10 tasks','💯 +150 XP / task','🧠 HOTS level']},
+ 5:{ic:'✍️',t:'PRODUCT CREATOR — FINAL MISSION',g:'Create your own honest, informative product description for the TECHZONE catalog, then pitch it in the Final Catalog!',
+    id:'Tulis deskripsi produkmu sendiri (50–100 kata). Sistem memeriksa kelengkapan, kejujuran, dan grammar — lalu menilai dengan rubrik transparan.',
+    pills:['🛒 Choose 1 of 5 devices','📝 50–100 words','🧾 Transparent rubric /100','🏆 Up to 2000 XP']}
+};
+function openIntro(n){
+  const d=INTRO[n]; state.level=n; save();
+  $('#introIcon').textContent=d.ic; $('#introTag').textContent='LEVEL '+n+' / 5';
+  $('#introTitle').textContent=d.t; $('#introGoal').textContent=d.g; $('#introGoalID').textContent=d.id;
+  $('#introPills').innerHTML=d.pills.map(p=>'<span class="pill">'+p+'</span>').join('');
+  show('scrIntro'); updateHUD();
+}
+$('#btnEnter').onclick=()=>{sfx.level();show('scrLevel');
+  ({1:startL1,2:startL2,3:startL3,4:startL4,5:startL5})[state.level]();};
+function finishLevel(){
+  clearInterval(L2Timer);
+  const n=state.level, lx=state.levelXP[n]||0;
+  state.done[n]=true; window.__segFrac=null;
+  if(!state.badges.includes(String(n))){state.badges.push(String(n));setTimeout(()=>{banner('🎖 BADGE UNLOCKED: '+BADGES[n],'#fbbf24');sfx.badge();},900);}
+  if(state.lvlPerfect){award(100,0);banner('💎 PERFECT LEVEL!','#3fe0ff');}
+  if(n<5)state.level=n+1; save(); sfx.level();
+  const body=$('#lvlBody');
+  const acc=(state.lvlC+state.lvlW)>0?Math.round(state.lvlC/(state.lvlC+state.lvlW)*100):100;
+  body.innerHTML='<div class="card" style="max-width:560px;margin:20px auto;text-align:center">'+
+    '<div style="font-size:3rem">'+INTRO[n].ic+'</div>'+
+    '<h3 style="color:var(--ok);letter-spacing:.06em">LEVEL '+n+' COMPLETE!</h3>'+
+    '<div class="report-grid">'+
+    '<div class="rep"><b>'+state.lvlC+'</b><span>Correct</span></div>'+
+    '<div class="rep"><b>'+state.lvlW+'</b><span>Wrong</span></div>'+
+    '<div class="rep"><b>'+acc+'%</b><span>Accuracy</span></div>'+
+    '<div class="rep"><b>'+lx+'</b><span>XP earned</span></div></div>'+
+    '<p style="color:var(--mut);font-size:.85rem">Badge: '+(BADGES[n]||'')+'</p>'+
+    '<button class="btn big" onclick="renderDashboard();show(\'scrDash\')">CONTINUE ▶</button></div>';
+  $('#lvlHeadRight').innerHTML='';updateHUD();
+}
+
+/* ================= LEVEL 1 — MYSTERY GEAR ================= */
+function startL1(){
+  state.lvlC=0;state.lvlW=0;state.lvlPerfect=true;
+  const qs=shuffle(L1_BANK).slice(0,10).map(q=>({...q,opts:shuffle([q.a,...shuffle(L1_DEVICES.filter(d=>d!==q.a)).slice(0,3)]),shown:1}));
+  window.L1={qs,i:0};
+  $('#lvlTitle').textContent='LEVEL 1 — MYSTERY GEAR';
+  $('#lvlSub').textContent='Identify the device from the clues. (Tebak perangkat dari clue.)';
+  nextL1();
+}
+function nextL1(){
+  const {qs,i}=window.L1; setSegFrac(i/qs.length);
+  const body=$('#lvlBody');
+  $('#lvlHeadRight').innerHTML='<span class="chip">ITEM '+(i+1)+' / '+qs.length+'</span>';
+  if(i>=qs.length){finishLevel();return;}
+  renderL1Q();
+}
+function renderL1Q(){
+  const q=window.L1.qs[window.L1.i], body=$('#lvlBody');
+  let html='<div class="card"><span class="tag">Mystery Item #'+(window.L1.i+1)+'</span>'+
+    '<div style="margin-top:12px" id="clueBox">';
+  q.clues.forEach((c,idx)=>{ if(idx<q.shown) html+='<div class="clue">🔍 <b>CLUE '+(idx+1)+':</b> “'+c+'”</div>'; });
+  html+='</div>';
+  if(q.shown<q.clues.length)
+    html+='<button class="btn ghost small" id="btnClue">🔍 Reveal clue '+(q.shown+1)+' of '+q.clues.length+'</button>';
+  html+='<div class="opts" id="l1opts">'+q.opts.map((o,k)=>
+    '<button class="opt" data-i="'+k+'"><span class="key">'+'ABCD'[k]+'</span>'+o+'</button>').join('')+'</div>'+
+    '<div id="l1fb"></div></div>';
+  body.innerHTML=html;
+  const bc=$('#btnClue'); if(bc)bc.onclick=()=>{q.shown++;sfx.click();renderL1Q();};
+  $$('#l1opts .opt').forEach(b=>b.onclick=()=>answerL1(+b.dataset.i,b));
+}
+function answerL1(i,btn){
+  const q=window.L1.qs[window.L1.i];
+  $$('#l1opts .opt').forEach(b=>b.disabled=true);
+  const chosen=q.opts[i];
+  if(chosen===q.a){ btn.classList.add('right'); sfx.correct(); onCorrectCombo(); award(100,10); state.lvlC++;
+    $('#l1fb').innerHTML=fbHTML(true,'CORRECT!','Great! <b>'+q.a+'</b> — '+q.exp)+
+      '<button class="btn" style="margin-top:12px" onclick="window.L1.i++;nextL1()">NEXT ▶</button>';
+  }else{ btn.classList.add('wrong'); state.lvlPerfect=false; state.lvlW++;
+    $$('#l1opts .opt').forEach(b=>{ if(q.opts[+b.dataset.i]===q.a)b.classList.add('right'); });
+    onWrongLife();
+    $('#l1fb').innerHTML=fbHTML(false,'NOT QUITE!','You chose “'+chosen+'”. Read the clues again. The answer is <b>'+q.a+'</b>. '+q.exp,
+      'Terjemahan: perhatikan fungsi utama perangkat di setiap clue.')+
+      '<button class="btn" style="margin-top:12px" onclick="window.L1.i++;nextL1()">NEXT ▶</button>';
+  }
+  updateHUD();save();
+}
+
+/* ================= LEVEL 2 — DEVICE INSPECTOR ================= */
+function startL2(){
+  state.lvlC=0;state.lvlW=0;state.lvlPerfect=true;
+  window.L2={items:shuffle(L2_ITEMS).map((it,i)=>({...it,id:i})),left:L2_ITEMS.length,time:90,sel:null,over:false};
+  $('#lvlTitle').textContent='LEVEL 2 — DEVICE INSPECTOR';
+  $('#lvlSub').textContent='Sort each chip into the right category. (Kelompokkan informasi ke kategori yang benar.)';
+  $('#lvlHeadRight').innerHTML='<span class="chip" id="l2count">'+window.L2.left+' chips left</span>';
+  buildL2(); startL2Timer();
+}
+function buildL2(){
+  const body=$('#lvlBody');
+  body.innerHTML='<div class="l2-wrap"><div class="card"><span class="tag">Information Chips</span>'+
+    '<div class="l2-pool" id="l2pool" style="margin-top:12px">'+
+    window.L2.items.map(it=>'<div class="l2-item" draggable="true" data-id="'+it.id+'">'+it.t+'</div>').join('')+
+    '</div><p style="font-size:.75rem;color:var(--mut);margin-top:8px">💡 Click a chip, then click a category — or drag &amp; drop.</p></div>'+
+    '<div class="card"><span class="tag">Categories</span><div class="l2-cats" id="l2cats" style="margin-top:12px">'+
+    L2_CATS.map(c=>'<div class="l2-cat" data-cat="'+c+'"><h4>'+c+'</h4><div class="placed"></div></div>').join('')+
+    '</div></div></div>';
+  $$('#l2pool .l2-item').forEach(el=>{
+    el.onclick=()=>{ if(window.L2.sel===el){el.classList.remove('sel');window.L2.sel=null;}
+      else{ $$('#l2pool .l2-item').forEach(x=>x.classList.remove('sel')); el.classList.add('sel');window.L2.sel=el;sfx.click(); } };
+    el.addEventListener('dragstart',e=>{e.dataTransfer.setData('text/plain',el.dataset.id);window.L2.sel=el;});
+  });
+  $$('.l2-cat').forEach(cat=>{
+    cat.onclick=()=>{ if(window.L2.sel) placeL2(window.L2.sel,cat); };
+    cat.addEventListener('dragover',e=>{e.preventDefault();cat.classList.add('over');});
+    cat.addEventListener('dragleave',()=>cat.classList.remove('over'));
+    cat.addEventListener('drop',e=>{e.preventDefault();cat.classList.remove('over');
+      const el=$('#l2pool .l2-item[data-id="'+e.dataTransfer.getData('text/plain')+'"]');
+      if(el)placeL2(el,cat);});
+  });
+  updateHUD();
+}
+function startL2Timer(){
+  const t=$('#hudTimer');t.classList.remove('hidden','low');
+  clearInterval(L2Timer);
+  const tick=()=>{ window.L2.time--; t.textContent='⏱ '+fmtTime(Math.max(0,window.L2.time));
+    if(window.L2.time<=15)t.classList.add('low');
+    if(window.L2.time<=0){clearInterval(L2Timer);endL2(true);} };
+  t.textContent='⏱ '+fmtTime(90); L2Timer=setInterval(tick,1000);
+}
+function placeL2(el,cat){
+  const item=window.L2.items.find(x=>x.id===+el.dataset.id);
+  if(!item)return;
+  if(item.c===cat.dataset.cat){
+    sfx.correct();onCorrectCombo();award(50,5);state.lvlC++;
+    el.classList.remove('sel');window.L2.sel=null;
+    cat.querySelector('.placed').appendChild(Object.assign(document.createElement('span'),{textContent:'✓ '+item.t}));
+    el.remove(); window.L2.left--;
+    $('#l2count').textContent=window.L2.left+' chips left'; setSegFrac(1-window.L2.left/L2_ITEMS.length);
+    if(window.L2.left===0){clearInterval(L2Timer);setTimeout(()=>endL2(false),600);}
+  }else{
+    sfx.wrong();state.lvlW++;state.lvlPerfect=false;state.combo=0;award(0,-20);
+    el.classList.add('flash-bad');setTimeout(()=>el.classList.remove('flash-bad'),450);
+    toast('✘ Not '+cat.dataset.cat+'. Try another category! (−20 score)');
+  }
+  updateHUD();save();
+}
+function endL2(timeout){
+  clearInterval(L2Timer);$('#hudTimer').classList.add('hidden');
+  const C=state.lvlC,W=state.lvlW,missed=window.L2.left;
+  const acc=Math.round(C/L2_ITEMS.length*100);
+  $('#lvlBody').innerHTML='<div class="card" style="max-width:620px;margin:14px auto">'+
+    '<span class="tag">📋 Device Inspection Report</span>'+
+    (timeout?'<p style="margin-top:10px;color:var(--warn)">⏰ Time is up! (Waktu habis.)</p>':'')+
+    '<div class="report-grid">'+
+    '<div class="rep"><b>'+C+'</b><span>Correct</span></div>'+
+    '<div class="rep"><b>'+W+'</b><span>Wrong tries</span></div>'+
+    '<div class="rep"><b>'+(missed||0)+'</b><span>Unsorted</span></div>'+
+    '<div class="rep"><b>'+acc+'%</b><span>Accuracy</span></div>'+
+    '<div class="rep"><b>'+(state.levelXP[2]||0)+'</b><span>XP earned</span></div></div>'+
+    '<p style="font-size:.85rem;color:var(--mut)">Inspector notes: categories like “SATA III” describe connectivity, while numbers like “512 GB” are technical specifications.</p>'+
+    '<div style="text-align:center;margin-top:12px"><button class="btn big" onclick="finishLevel()">FINISH INSPECTION ▶</button></div></div>';
+}
+
+/* ================= LEVEL 3 — TECH DETECTIVE ================= */
+function startL3(){
+  state.lvlC=0;state.lvlW=0;state.lvlPerfect=true;
+  const segs=[];
+  shuffle(L3_DATA.adj).forEach(q=>segs.push({g:'A',name:'ADJECTIVE HUNT',type:'adj',q}));
+  shuffle(L3_DATA.np).forEach(q=>segs.push({g:'B',name:'NOUN PHRASE BUILDER',type:'np',q}));
+  shuffle(L3_DATA.fix).forEach(q=>segs.push({g:'C',name:'SIMPLE PRESENT FIXER',type:'fix',q}));
+  shuffle(L3_DATA.sb).forEach(q=>segs.push({g:'D',name:'SENTENCE BUILDER',type:'sb',q}));
+  window.L3={segs,i:0};
+  $('#lvlTitle').textContent='LEVEL 3 — TECH DETECTIVE';
+  $('#lvlSub').textContent='Four mini-games: adjectives, noun phrases, grammar, sentences.';
+  nextL3();
+}
+function nextL3(){
+  const {segs,i}=window.L3; setSegFrac(i/segs.length);
+  if(i>=segs.length){finishLevel();return;}
+  $('#lvlHeadRight').innerHTML='<span class="chip">CHALLENGE '+(i+1)+' / '+segs.length+'</span>';
+  const s=segs[i];
+  ({adj:renderAdj,np:renderBuilder,fix:renderFix,sb:renderBuilder})[s.type](s);
+}
+function l3Header(s,title){
+  return '<div class="card"><span class="mini-tag">GAME '+s.g+' — '+s.name+'</span><h3 style="margin:6px 0 12px">'+title+'</h3>';
+}
+function l3Next(){window.L3.i++;nextL3();}
+function renderAdj(s){
+  const q=s.q;
+  $('#lvlBody').innerHTML=l3Header(s,'Find an ADJECTIVE — click one describing word in this sentence:')+
+    '<div style="font-size:1.15rem;margin:8px 0 14px">'+q.s.map((w,i)=>'<button class="tok" data-i="'+i+'">'+w+'</button>').join(' ')+'</div>'+
+    '<div id="l3fb"></div></div>';
+  $$('#lvlBody .tok').forEach(b=>b.onclick=()=>{
+    const w=q.s[+b.dataset.i]; $$('#lvlBody .tok').forEach(x=>x.disabled=true);
+    if(q.ok.includes(w)){ b.classList.add('ok'); sfx.correct(); onCorrectCombo(); award(62,5); state.lvlC++;
+      $('#l3fb').innerHTML=fbHTML(true,'CORRECT!','“'+w.replace('.','')+'” is an adjective. '+q.exp)+
+        '<button class="btn" style="margin-top:12px" onclick="l3Next()">NEXT ▶</button>';
+    }else{ b.classList.add('no'); state.lvlPerfect=false; state.lvlW++; onWrongLife();
+      $$('#lvlBody .tok').forEach(x=>{ if(q.ok.includes(q.s[+x.dataset.i]))x.classList.add('ok'); });
+      $('#l3fb').innerHTML=fbHTML(false,'NOT QUITE!','“'+w+'” is not the adjective here. '+q.exp,'Adjective = kata sifat yang menjelaskan kata benda.')+
+        '<button class="btn" style="margin-top:12px" onclick="l3Next()">NEXT ▶</button>';
+    }
+    updateHUD();save();
+  });
+}
+function renderBuilder(s){
+  const q=s.q, pool=shuffle(q.w);
+  window.L3.build=[];
+  $('#lvlBody').innerHTML=l3Header(s,(s.type==='np'?'Build the NOUN PHRASE':'Arrange the SENTENCE')+' — click the words in the correct order:')+
+    '<div class="build-area" id="buildArea"><span style="color:var(--mut);font-size:.85rem">Your answer appears here…</span></div>'+
+    '<div class="pool" id="poolBox">'+pool.map((w,i)=>'<button class="tok" data-w="'+w.replace(/"/g,'&quot;')+'">'+w+'</button>').join(' ')+'</div>'+
+    '<div style="display:flex;gap:8px;margin-top:14px"><button class="btn" id="btnCheckB">✔ CHECK</button>'+
+    '<button class="btn ghost" id="btnResetB">↺ RESET</button></div><div id="l3fb"></div></div>';
+  $$('#poolBox .tok').forEach(b=>b.onclick=()=>{ if(b.disabled)return;
+    window.L3.build.push(b.dataset.w); b.disabled=true; b.style.opacity=.25; sfx.click(); drawBuild(); });
+  $('#btnResetB').onclick=()=>{ window.L3.build=[]; $$('#poolBox .tok').forEach(b=>{b.disabled=false;b.style.opacity=1;}); drawBuild(); sfx.click(); };
+  $('#btnCheckB').onclick=()=>{
+    const ans=window.L3.build.join(' ').trim();
+    if(!ans){toast('Click the words first! (Klik kata-katanya dulu.)');return;}
+    $$('#lvlBody .tok,#btnCheckB,#btnResetB').forEach(x=>x.disabled=true);
+    if(ans===q.a){ sfx.correct(); onCorrectCombo(); award(62,5); state.lvlC++;
+      $('#l3fb').innerHTML=fbHTML(true,'CORRECT!','“'+q.a+'” — '+q.exp)+
+        '<button class="btn" style="margin-top:12px" onclick="l3Next()">NEXT ▶</button>';
+    }else{ state.lvlPerfect=false; state.lvlW++; onWrongLife();
+      $('#l3fb').innerHTML=fbHTML(false,'NOT QUITE!','Your answer: “'+ans+'”. Correct answer: <b>“'+q.a+'”</b>. '+q.exp)+
+        '<button class="btn" style="margin-top:12px" onclick="l3Next()">NEXT ▶</button>';
+    }
+    updateHUD();save();
+  };
+  function drawBuild(){ const box=$('#buildArea');
+    box.innerHTML=window.L3.build.length?window.L3.build.map(w=>'<span class="bword">'+w+'</span>').join(''):
+      '<span style="color:var(--mut);font-size:.85rem">Your answer appears here…</span>';
+    $$('#buildArea .bword').forEach((el,i)=>el.onclick=()=>{
+      const w=window.L3.build.splice(i,1)[0];
+      const tok=$$('#poolBox .tok').find(b=>b.disabled&&b.dataset.w===w); if(tok){tok.disabled=false;tok.style.opacity=1;}
+      drawBuild();sfx.click(); });
+  }
+}
+function renderFix(s){
+  const q=s.q;
+  $('#lvlBody').innerHTML=l3Header(s,'Choose the CORRECT verb to complete the sentence:')+
+    '<div class="claim-card">'+q.s+'</div><div class="opts">'+
+    q.o.map((o,i)=>'<button class="opt" data-i="'+i+'"><span class="key">'+'ABCD'[i]+'</span>'+o+'</button>').join('')+
+    '</div><div id="l3fb"></div></div>';
+  $$('#lvlBody .opt').forEach(b=>b.onclick=()=>{
+    $$('#lvlBody .opt').forEach(x=>x.disabled=true);
+    if(+b.dataset.i===q.a){ b.classList.add('right'); sfx.correct(); onCorrectCombo(); award(62,5); state.lvlC++;
+      $('#l3fb').innerHTML=fbHTML(true,'CORRECT!',q.s.replace('____','<b>'+q.o[q.a]+'</b>')+' — '+q.exp)+
+        '<button class="btn" style="margin-top:12px" onclick="l3Next()">NEXT ▶</button>';
+    }else{ b.classList.add('wrong'); state.lvlPerfect=false; state.lvlW++; onWrongLife();
+      $$('#lvlBody .opt')[q.a].classList.add('right');
+      $('#lvlBody').insertAdjacentHTML; $('#l3fb').innerHTML=fbHTML(false,'NOT QUITE!','The correct verb is <b>“'+q.o[q.a]+'”</b>. '+q.exp,
+        'Ingat: subjek tunggal (it/he/she) → kata kerja + s.')+
+        '<button class="btn" style="margin-top:12px" onclick="l3Next()">NEXT ▶</button>';
+    }
+    updateHUD();save();
+  });
+}
+
+/* ================= LEVEL 4 — LISTING BATTLE ================= */
+function startL4(){
+  state.lvlC=0;state.lvlW=0;state.lvlPerfect=true;
+  const tasks=[];
+  L4_TASKS.forEach(t=>tasks.push(t));
+  L4_CLAIMS.forEach(c=>tasks.push({kind:'claimQ',c}));
+  window.L4={tasks,i:0};
+  $('#lvlTitle').textContent='LEVEL 4 — LISTING BATTLE';
+  $('#lvlSub').textContent='Analyze, compare, and judge product claims. (Analisis listing & nilai klaim.)';
+  nextL4();
+}
+function l4Listings(){
+  return '<div class="listings"><div class="listing l1"><h4>📄 LISTING 1</h4><p style="white-space:pre-wrap">'+L4_LISTING1+'</p></div>'+
+    '<div class="listing l2"><h4>📄 LISTING 2</h4><p style="white-space:pre-wrap">'+L4_LISTING2+'</p></div></div>';
+}
+function nextL4(){
+  const {tasks,i}=window.L4; setSegFrac(i/tasks.length);
+  if(i>=tasks.length){finishLevel();return;}
+  $('#lvlHeadRight').innerHTML='<span class="chip">TASK '+(i+1)+' / '+tasks.length+'</span>';
+  const t=tasks[i], body=$('#lvlBody');
+  if(t.kind==='mc'){
+    body.innerHTML=l4Listings()+'<div class="card"><h3 style="margin-bottom:12px">'+t.q+'</h3><div class="opts">'+
+      t.o.map((o,k)=>'<button class="opt" data-i="'+k+'"><span class="key">'+'AB'[k]+'</span>'+o+'</button>').join('')+
+      '</div><div id="l4fb"></div></div>';
+    $$('#lvlBody .opt').forEach(b=>b.onclick=()=>answerL4MC(t,b));
+  }else if(t.kind==='multi'){
+    body.innerHTML=l4Listings()+'<div class="card"><h3 style="margin-bottom:12px">'+t.q+'</h3>'+
+      t.o.map((o,k)=>'<label class="qi"><input type="checkbox" data-i="'+k+'"><span>'+o.t+'</span></label>').join('')+
+      '<button class="btn" id="btnMulti" style="margin-top:12px">✔ SUBMIT ANSWER</button><div id="l4fb"></div></div>';
+    $('#btnMulti').onclick=()=>{
+      const picked=$$('#lvlBody input[type=checkbox]').map(c=>c.checked);
+      const ok=picked.every((v,k)=>v===t.o[k].ok);
+      $$('#lvlBody input').forEach(c=>c.disabled=true);$('#btnMulti').disabled=true;
+      if(ok){sfx.correct();onCorrectCombo();award(150,10);state.lvlC++;
+        $('#l4fb').innerHTML=fbHTML(true,'CORRECT!',t.exp)+'<button class="btn" style="margin-top:12px" onclick="window.L4.i++;nextL4()">NEXT ▶</button>';}
+      else{state.lvlPerfect=false;state.lvlW++;onWrongLife();
+        $('#l4fb').innerHTML=fbHTML(false,'NOT QUITE!','Check the options again. '+t.exp)+
+          '<button class="btn" style="margin-top:12px" onclick="window.L4.i++;nextL4()">NEXT ▶</button>';}
+      updateHUD();save();
+    };
+  }else if(t.kind==='short'){
+    body.innerHTML=l4Listings()+'<div class="card"><h3 style="margin-bottom:12px">'+t.q+'</h3>'+
+      '<div class="field"><textarea id="shortAns" rows="3" placeholder="Write your answer in English (or campur dulu juga boleh)…"></textarea></div>'+
+      '<button class="btn" id="btnShort">✔ SUBMIT ANSWER</button><div id="l4fb"></div></div>';
+    $('#btnShort').onclick=()=>{
+      const txt=($('#shortAns').value||'').toLowerCase(); $('#shortAns').disabled=true;$('#btnShort').disabled=true;
+      const hits=t.keys.filter(k=>txt.includes(k));
+      if(hits.length>=2){sfx.correct();onCorrectCombo();award(150,10);state.lvlC++;
+        $('#l4fb').innerHTML=fbHTML(true,'EXCELLENT ANALYSIS! ('+hits.length+' key ideas found)',
+          'Great keywords: <b>'+hits.slice(0,4).join(', ')+'</b>. Model answer: '+t.model)+
+          '<button class="btn" style="margin-top:12px" onclick="window.L4.i++;nextL4()">NEXT ▶</button>';}
+      else if(hits.length===1){sfx.click();award(75,5);state.lvlC++;state.lvlPerfect=false;
+        $('#l4fb').innerHTML=fbHTML(true,'GOOD START — PARTIAL CREDIT (+75 XP)',
+          'You found one key idea (“'+hits[0]+'”). To get full credit, also mention facts like <i>specific numbers, capacity, speed, warranty</i>. Model answer: '+t.model)+
+          '<button class="btn" style="margin-top:12px" onclick="window.L4.i++;nextL4()">NEXT ▶</button>';}
+      else{state.lvlPerfect=false;state.lvlW++;state.combo=0;
+        $('#l4fb').innerHTML=fbHTML(false,'NEEDS MORE DETAIL','No key ideas detected (no life lost — this is a writing task). '+
+          'Hint: talk about being <b>specific</b> and giving <b>facts / technical information</b>. Model answer: '+t.model)+
+          '<button class="btn" style="margin-top:12px" onclick="window.L4.i++;nextL4()">NEXT ▶</button>';
+        updateHUD();save();}
+      save();
+    };
+  }else if(t.kind==='claim'){
+    body.innerHTML=l4Listings()+'<div class="card"><span class="tag">Claim Evaluator</span>'+
+      '<p style="margin:10px 0;color:var(--mut)">'+t.q+'</p>'+
+      '<div class="pill-row"><span class="pill">✓ Supported by evidence</span><span class="pill">⚠ Needs evidence</span><span class="pill">✗ Exaggerated claim</span></div>'+
+      '<button class="btn big" id="btnClaims" style="margin-top:8px">START CLAIM ROUND ▶</button></div>';
+    $('#btnClaims').onclick=()=>{sfx.click();window.L4.i++;nextL4();};
+  }else if(t.kind==='claimQ'){
+    const c=t.c;
+    body.innerHTML='<div class="card"><span class="mini-tag">CLAIM '+(window.L4.i-4)+' / 5</span>'+
+      '<div class="claim-card">'+c.c+'</div>'+
+      '<div class="verdict">'+
+      '<button data-v="0">✓ Supported by evidence</button>'+
+      '<button data-v="1">⚠ Needs evidence</button>'+
+      '<button data-v="2">✗ Exaggerated claim</button></div><div id="l4fb"></div></div>';
+    $$('#lvlBody .verdict button').forEach(b=>b.onclick=()=>{
+      $$('#lvlBody .verdict button').forEach(x=>x.disabled=true);
+      const v=+b.dataset.v;
+      if(v===c.a){b.classList.add('right');sfx.correct();onCorrectCombo();award(150,10);state.lvlC++;
+        $('#l4fb').innerHTML=fbHTML(true,'CORRECT VERDICT!',c.exp)+
+          '<button class="btn" style="margin-top:12px" onclick="window.L4.i++;nextL4()">NEXT ▶</button>';}
+      else{b.classList.add('wrong');state.lvlPerfect=false;state.lvlW++;onWrongLife();
+        $$('#lvlBody .verdict button')[c.a].classList.add('right');
+        $('#l4fb').innerHTML=fbHTML(false,'WRONG VERDICT!',c.exp)+
+          '<button class="btn" style="margin-top:12px" onclick="window.L4.i++;nextL4()">NEXT ▶</button>';}
+      updateHUD();save();
+    });
+  }
+}
+function answerL4MC(t,b){
+  $$('#lvlBody .opt').forEach(x=>x.disabled=true);
+  if(+b.dataset.i===t.a){b.classList.add('right');sfx.correct();onCorrectCombo();award(150,10);state.lvlC++;
+    $('#l4fb').innerHTML=fbHTML(true,'CORRECT!',t.exp)+'<button class="btn" style="margin-top:12px" onclick="window.L4.i++;nextL4()">NEXT ▶</button>';}
+  else{b.classList.add('wrong');state.lvlPerfect=false;state.lvlW++;onWrongLife();
+    $$('#lvlBody .opt')[t.a].classList.add('right');
+    $('#l4fb').innerHTML=fbHTML(false,'NOT QUITE!',t.exp)+
+      '<button class="btn" style="margin-top:12px" onclick="window.L4.i++;nextL4()">NEXT ▶</button>';}
+  updateHUD();save();
+}
+
+/* ================= LEVEL 5 — PRODUCT CREATOR ================= */
+function startL5(){
+  state.lvlC=0;state.lvlW=0;state.lvlPerfect=true;
+  $('#lvlTitle').textContent='LEVEL 5 — PRODUCT CREATOR · FINAL MISSION';
+  $('#lvlSub').textContent='Choose a device, then write an honest, informative catalog description.';
+  $('#lvlHeadRight').innerHTML='';
+  pickDevice();
+}
+function pickDevice(){
+  $('#lvlBody').innerHTML='<div class="card" style="text-align:center"><span class="tag">Step 1 / 3 — Choose your device</span>'+
+    '<p style="margin:10px 0;color:var(--mut)">Pilih satu perangkat yang akan kamu buat deskripsinya.</p>'+
+    '<div class="dev-grid">'+DEVICES.map((d,i)=>'<button class="dev-card" data-i="'+i+'"><span class="ic">'+d.ic+'</span>'+
+      '<span class="nm">'+d.n+'</span></button>').join('')+'</div></div>';
+  $$('#lvlBody .dev-card').forEach(b=>b.onclick=()=>{window.L5={dev:DEVICES[+b.dataset.i]};sfx.click();setSegFrac(.33);formL5();});
+}
+function formL5(){
+  const d=window.L5.dev;
+  const st=[
+    'The '+d.n.toLowerCase()+' is a [adjective] '+d.cat+' for …',
+    'It is [adjective] and made of …',
+    'It has … (capacity / ports / speed)',
+    'It comes with …',
+    'It supports …',
+    'It is suitable for … because …',
+    'The package includes …'];
+  $('#lvlBody').innerHTML='<div class="card"><span class="tag">Step 2 / 3 — Product Data &amp; Description · '+d.ic+' '+d.n+'</span>'+
+  '<div class="form-grid" style="margin-top:14px">'+
+  '<div class="field"><label>PRODUCT NAME *</label><input id="fName" placeholder="e.g. Nova R300 Dual-Band Router"></div>'+
+  '<div class="field"><label>TAGLINE</label><input id="fTag" placeholder="e.g. Small body, big signal."></div>'+
+  '<div class="field"><label>SHAPE &amp; SIZE</label><input id="fShape" placeholder="e.g. compact, 18 cm wide, two antennas"></div>'+
+  '<div class="field"><label>COLOR &amp; MATERIAL</label><input id="fColor" placeholder="e.g. black, made of matte plastic"></div>'+
+  '<div class="field"><label>TECHNICAL SPECIFICATION</label><input id="fSpec" placeholder="e.g. 1200 Mbps, dual-band 2.4/5 GHz"></div>'+
+  '<div class="field"><label>FUNCTION</label><input id="fFunc" placeholder="e.g. connects the LAN to the Internet"></div>'+
+  '<div class="field"><label>CONNECTIVITY</label><input id="fConn" placeholder="e.g. Wi-Fi 5, 4 LAN ports, WAN port"></div>'+
+  '<div class="field"><label>PACKAGE</label><input id="fPack" placeholder="e.g. 1 router, 1 adapter, 1 LAN cable"></div>'+
+  '<div class="field"><label>WARRANTY</label><input id="fWarr" placeholder="e.g. 2-year warranty"></div>'+
+  '<div class="field full"><label>YOUR DESCRIPTION (50–100 words, ideal 80–100) *</label>'+
+  '<textarea id="fDesc" rows="8" placeholder="Write 4–8 sentences. Gunakan sentence starters di bawah. Jujur ya — no exaggerated claims!"></textarea>'+
+  '<div class="wordmeter" id="wordMeter">WORDS: 0 / 50–100</div></div>'+
+  '<div class="full" style="font-size:.8rem;color:var(--mut)"><b style="color:#c4b5fd">SENTENCE STARTERS:</b> '+
+    st.map(x=>'<span class="pill" style="margin:3px 3px 0 0;font-size:.7rem">'+x+'</span>').join('')+'</div>'+
+  '</div>'+
+  '<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px">'+
+  '<div><span class="tag">Live Checklist</span><ul class="check-list" id="checkList"></ul></div>'+
+  '<div><span class="tag">Rules of an Honest Copywriter</span><ul style="font-size:.85rem;color:#d6e2ff;padding-left:20px;margin-top:10px">'+
+  '<li>Use facts and numbers (GB, Mbps, ports).</li><li>Use simple present: it is / it has / it supports.</li>'+
+  '<li>No “the best in the world” without proof.</li><li>Mention package and warranty.</li></ul>'+
+  '<button class="btn big" id="btnPreview" style="margin-top:14px;width:100%" disabled>🛒 PREVIEW FINAL PITCH ▶</button>'+
+  '<p style="font-size:.72rem;color:var(--mut);margin-top:6px">Tombol aktif jika semua field wajib terisi dan jumlah kata 50–100.</p></div>'+
+  '</div></div>';
+  ['fName','fTag','fShape','fColor','fSpec','fFunc','fConn','fPack','fWarr','fDesc'].forEach(id=>$('#'+id).addEventListener('input',validateL5));
+  $('#btnPreview').onclick=()=>{buildProduct();sfx.click();pitchL5();};
+  validateL5();
+}
+function textFields(){return{
+  name:$('#fName').value.trim(),tag:$('#fTag').value.trim(),shape:$('#fShape').value.trim(),color:$('#fColor').value.trim(),
+  spec:$('#fSpec').value.trim(),func:$('#fFunc').value.trim(),conn:$('#fConn').value.trim(),
+  pack:$('#fPack').value.trim(),warr:$('#fWarr').value.trim(),desc:$('#fDesc').value.trim()};}
+function words(t){return t?t.trim().split(/\s+/).filter(Boolean).length:0;}
+function containsAny(t,list){const l=t.toLowerCase();return list.filter(w=>l.includes(w));}
+function countUnits(t){const m=t.match(/\d+\s?(gb|tb|mb\/s|ghz|mhz|mbps|ports?|cm|mm|inch)/gi);return m?m.length:0;}
+function validateL5(){
+  const f=textFields(), d=window.L5.dev;
+  const all=(f.name+' '+f.shape+' '+f.color+' '+f.spec+' '+f.func+' '+f.conn+' '+f.pack+' '+f.warr+' '+f.desc).toLowerCase();
+  const full=f.desc.toLowerCase();
+  const wc=words(f.desc);
+  const adj=containsAny(all,ADJ_WORDS), tech=containsAny(all,TECH_WORDS);
+  const spHits=full.match(/\b(it (is|has|supports|comes|uses|works|connects|reads|writes|offers)|the [a-z ]+ (is|has|supports))\b/g)||[];
+  const flags=containsAny(full,RED_FLAGS);
+  const hasUnits=(countUnits(all)>=3);
+  const checks=[
+   {n:'Identification (product name & category)',ok:f.name.length>2&&full.includes((d.cat.split(' ')[0])),
+    sug:'Tulis nama produk dan sebutkan jenisnya, mis. “… is a compact router …”'},
+   {n:'Physical characteristics (≥3 adjectives)',ok:adj.length>=3,
+    sug:'Tambahkan minimal 3 kata sifat: slim, compact, lightweight, durable…'},
+   {n:'Technical specifications (≥3 details/units)',ok:hasUnits,
+    sug:'Tambahkan angka + satuan: 512 GB, 550 MB/s, 2.4 GHz, 8 ports…'},
+   {n:'Function explained',ok:containsAny(all,FUNC_WORDS).length>0,
+    sug:'Gunakan: connects / stores / transfers / supports…'},
+   {n:'Benefit stated',ok:containsAny(full,BEN_WORDS).length>0,
+    sug:'Jelaskan manfaat: “It is suitable for … because …”'},
+   {n:'Technical vocabulary',ok:tech.length>=4,sug:'Gunakan istilah teknis: port, antenna, bandwidth, compatible…'},
+   {n:'Simple present tense used',ok:spHits.length>=2,
+    sug:'Gunakan pola: It is / It has / It supports / It comes with…'},
+   {n:'Honest information (no exaggerated claims)',ok:flags.length===0,
+    sug:flags.length?('Hapus klaim berlebihan: “'+flags[0]+'”. Ganti dengan fakta.'):''}];
+  $('#checkList').innerHTML=checks.map(c=>'<li><span class="'+(c.ok?'yes':'no')+'">'+(c.ok?'✔':'✘')+'</span><span>'+c.n+
+    ((!c.ok&&c.sug)?'<span class="sug">💡 '+c.sug+'</span>':'')+'</span></li>').join('');
+  const meter=$('#wordMeter');meter.textContent='WORDS: '+wc+' / 50–100'+(wc>=80?' · IDEAL! 🎯':'');
+  meter.className='wordmeter'+(wc>=80&&wc<=100?' ideal':(wc>=50&&wc<=100?' good':''));
+  const ready=f.name.length>2&&wc>=50&&wc<=100;
+  $('#btnPreview').disabled=!ready;
+  window.L5.checks=checks;window.L5.wc=wc;window.L5.adj=adj;window.L5.tech=tech;window.L5.sp=spHits;window.L5.flags=flags;
+}
+function buildProduct(){
+  const f=textFields(),d=window.L5.dev;
+  state.product={device:d.n,icon:d.ic,name:f.name,tag:f.tag,shape:f.shape,color:f.color,spec:f.spec,func:f.func,
+    conn:f.conn,pack:f.pack,warr:f.warr,desc:f.desc,wc:window.L5.wc};
+  save();
+}
+function pitchL5(){
+  setSegFrac(.66);
+  const p=state.product;
+  $('#lvlBody').innerHTML='<div class="pitch"><div class="pitch-hero">'+p.icon+'</div><div class="pitch-body">'+
+    '<span class="tag">TECHZONE™ OFFICIAL CATALOG — FINAL PITCH</span>'+
+    '<h3 style="margin-top:8px">'+p.name+'</h3><div class="tl">'+(p.tag?'“'+p.tag+'”':'')+'</div>'+
+    '<div class="desc">'+p.desc+'</div>'+
+    '<div class="spec-line"><b>Shape &amp; Size:</b> '+(p.shape||'—')+'</div>'+
+    '<div class="spec-line"><b>Color &amp; Material:</b> '+(p.color||'—')+'</div>'+
+    '<div class="spec-line"><b>Specification:</b> '+(p.spec||'—')+'</div>'+
+    '<div class="spec-line"><b>Function:</b> '+(p.func||'—')+'</div>'+
+    '<div class="spec-line"><b>Connectivity:</b> '+(p.conn||'—')+'</div>'+
+    '<div class="spec-line"><b>Package:</b> '+(p.pack||'—')+'</div>'+
+    '<div class="spec-line"><b>Warranty:</b> '+(p.warr||'—')+'</div>'+
+    '<div style="text-align:center;margin-top:16px"><button class="btn big" id="btnSubmitProduct">🚀 SUBMIT PRODUCT</button></div>'+
+    '</div></div>';
+  $('#btnSubmitProduct').onclick=()=>{gradeRubric();sfx.level();};
+}
+function gradeRubric(){
+  setSegFrac(.9);
+  const L=window.L5,p=state.product,checks=L.checks;
+  const rows=[];
+  /* 1. Structure & Completeness — 25 */
+  let s1=0;
+  if(p.name)s1+=4; if(p.tag)s1+=2;
+  if(p.shape)s1+=4; if(p.color)s1+=4; if(p.spec)s1+=4; if(p.func)s1+=4;
+  if(p.conn)s1+=2; if(p.pack)s1+=2; if(p.warr)s1+=2;
+  if(checks[0].ok)s1+=1; s1=Math.min(25,s1);
+  rows.push({n:'Structure & Completeness',max:25,s:s1,
+    why:s1>=22?'Your description includes identification, physical features, specifications, function, package, and warranty. Excellent structure!':
+        'Some catalog fields are empty or thin. A complete listing covers shape, color, specs, function, package, and warranty.'});
+  /* 2. Accuracy & Honesty — 25 */
+  let s2=25; const flags=L.flags;
+  s2-=flags.length*6; if(countUnits(p.desc+' '+p.spec)<2)s2-=5;
+  s2=Math.max(0,s2);
+  rows.push({n:'Accuracy & Honesty',max:25,s:s2,
+    why:flags.length?('Exaggerated claim detected (“'+flags[0]+'”). Honest copy uses facts, not big promises.'):
+        (countUnits(p.desc+' '+p.spec)>=2?'Your claims are backed by specific facts and numbers. Trustworthy copywriting!':
+        'No exaggeration found, but add more concrete numbers to prove your claims.')});
+  /* 3. Vocabulary & Noun Phrase — 20 */
+  const adj=L.adj,tech=L.tech;
+  let s3=Math.min(12,adj.length*3)+Math.min(8,Math.max(0,(tech.length-2))*2);
+  s3=Math.max(4,Math.min(20,s3));
+  rows.push({n:'Vocabulary & Noun Phrase',max:20,s:s3,
+    why:'Found '+adj.length+' adjectives ('+adj.slice(0,4).join(', ')+') and '+tech.length+' technical terms ('+tech.slice(0,4).join(', ')+'). '+(s3>=16?'Great descriptive vocabulary!':'Try adding more adjectives and technical terms from the Learning Corner.')});
+  /* 4. Grammar / Simple Present — 15 */
+  const sp=L.sp, errs=(p.desc.toLowerCase().match(/\b(it (have|support|connect|read|write|come|work|include)\b|are has|is have)\b/g)||[]);
+  let s4=Math.min(12,sp.length*3)+3-errs.length*2; s4=Math.max(3,Math.min(15,s4));
+  rows.push({n:'Grammar / Simple Present',max:15,s:s4,
+    why:errs.length?('Most simple present sentences work, but check subject–verb agreement (e.g. “it have” → “it has”). Found: '+errs[0]):
+      (sp.length>=3?'Your simple present sentences are correct: '+sp.slice(0,3).join(', ')+' — nice!':'Good start; use more patterns like “It has / It supports”.')});
+  /* 5. Creativity & Catalog Design — 15 */
+  let s5=2; if(p.tag&&words(p.tag)>=3)s5+=3;
+  s5+=(L.wc>=80?4:2);
+  const usedStarters=STARTERS.filter(s=>p.desc.toLowerCase().includes(s));
+  s5+=Math.min(6,usedStarters.length*2); s5=Math.min(15,s5);
+  rows.push({n:'Creativity & Catalog Design',max:15,s:s5,
+    why:(p.tag?'Nice tagline! ':'Add a catchy tagline. ')+'Word count '+L.wc+(L.wc>=80?' (ideal range). ':' (aim for 80–100). ')+
+      'You used '+usedStarters.length+' different sentence starters.'});
+  const total=rows.reduce((a,r)=>a+r.s,0);
+  state.rubric={rows,total};
+  const xp=total*20; /* max 2000 */
+  const sc=Math.round(total/10);
+  award(xp,sc); state.lvlC++;
+  if(total>=60){sfx.badge();}
+  $('#lvlBody').innerHTML='<div class="card" style="max-width:680px;margin:10px auto">'+
+    '<span class="tag">🧾 Auto-Grading Rubric — Transparent Scoring</span>'+
+    '<div style="text-align:center;margin:12px 0"><span class="disp" style="font-size:2.6rem;color:var(--cyan)">'+total+'</span><span style="color:var(--mut)"> / 100</span>'+
+    '<div style="color:var(--warn);font-family:var(--disp);letter-spacing:.06em;margin-top:4px">+'+xp+' XP EARNED</div></div>'+
+    rows.map(r=>'<div class="rubric-row"><span>'+r.n+'</span><b>'+r.s+' / '+r.max+'</b>'+
+      '<div class="bar" style="grid-column:1/-1"><i style="width:'+Math.round(r.s/r.max*100)+'%"></i></div>'+
+      '<span class="why">“'+r.why+'”</span></div>').join('')+
+    '<div style="text-align:center;margin-top:16px"><button class="btn big" id="btnFinishGame">🏁 COMPLETE MISSION</button></div></div>';
+  $$('.rubric-row .bar i').forEach(i=>{const w=i.style.width;i.style.width='0';setTimeout(()=>i.style.width=w,100);});
+  $('#btnFinishGame').onclick=()=>{ if(!state.badges.includes('5'))state.badges.push('5');
+    if(!state.badges.includes('final'))state.badges.push('final');
+    state.finished=true;save();renderFinal();show('scrFinal');sfx.level(); };
+}
+
+/* ================= FINAL RESULT & REFLECTION ================= */
+function finalCategory(pct){
+  if(pct>=90)return{t:'🏆 TECH COPYWRITER MASTER',m:'Excellent! You can describe technology clearly, accurately, and honestly. TECHZONE is proud of you!'};
+  if(pct>=80)return{t:'🥇 TECH COPYWRITER PRO',m:'Great work! Your descriptions are informative and trustworthy. Polish your grammar to reach mastery!'};
+  if(pct>=70)return{t:'🥈 TECH COPYWRITER',m:'Good work! Keep improving your technical vocabulary and grammar — you are on the right track.'};
+  if(pct>=60)return{t:'🥉 JUNIOR COPYWRITER',m:'Nice effort! Revisit the Learning Corner, then replay the levels to level up your skills.'};
+  return{t:'📝 TECH COPYWRITER TRAINEE',m:'Every great copywriter starts somewhere. Review the material, try again, and you will get there!'};
+}
+function renderFinal(){
+  const pct=Math.min(100,Math.round(state.score/MAXSCORE*100));
+  const cat=finalCategory(pct);
+  const tot=state.gc+state.gw, acc=tot?Math.round(state.gc/tot*100):0;
+  const ratios=[1,2,3,4,5].map(n=>({n,r:(state.levelXP[n]||0)/CAP[n]})).sort((a,b)=>b.r-a.r);
+  const best='Level '+ratios[0].n+' ('+INTRO[ratios[0].n].t+')';
+  const badgesHTML=[1,2,3,4,5,'final'].map(b=>'<span class="pill" style="font-size:.85rem">'+BADGES[b]+'</span>').join(' ');
+  $('#scrFinal').innerHTML=
+   '<div class="card" style="max-width:760px;margin:16px auto;text-align:center">'+
+   '<div style="font-size:3rem">🎉</div><h2 style="letter-spacing:.06em;color:var(--cyan)">MISSION COMPLETED!</h2>'+
+   '<div class="rank-title">'+cat.t+'</div>'+
+   '<p style="color:#d6e2ff;max-width:520px;margin:0 auto">'+cat.m+'</p>'+
+   '<div class="report-grid" style="margin-top:16px">'+
+   '<div class="rep"><b>'+state.name+'</b><span>Player</span></div>'+
+   '<div class="rep"><b>'+state.kelas+'</b><span>Class</span></div>'+
+   '<div class="rep"><b>'+state.score+'</b><span>Final Score / '+MAXSCORE+'</span></div>'+
+   '<div class="rep"><b>'+state.xp+'</b><span>Total XP</span></div>'+
+   '<div class="rep"><b>'+acc+'%</b><span>Accuracy</span></div>'+
+   '<div class="rep"><b>'+pct+'%</b><span>Performance</span></div>'+
+   '<div class="rep"><b>'+best+'</b><span>Best Level</span></div>'+
+   '<div class="rep"><b>'+(state.product?state.product.name:'—')+'</b><span>Product Created</span></div></div>'+
+   '<div style="margin-top:8px">'+badgesHTML+'</div>'+
+   '<div style="display:flex;gap:8px;justify-content:center;margin-top:16px;flex-wrap:wrap">'+
+   '<button class="btn ghost small" onclick="renderDashboard();show(\'scrDash\')">🏠 DASHBOARD</button>'+
+   '<button class="btn violet small" onclick="openTeacher()">🧑‍🏫 TEACHER MODE</button>'+
+   '<button class="btn small" id="btnPlayAgain">🔁 PLAY AGAIN</button></div></div>'+
+   '<div class="card" style="max-width:760px;margin:16px auto"><span class="tag">🪞 REFLECTION</span>'+
+   '<p style="color:var(--mut);font-size:.85rem;margin:8px 0">Jawab dengan jujur — refleksi membantu belajar lebih dalam.</p>'+
+   '<div class="field"><label>1. What did you learn today about describing technology?</label>'+
+   '<textarea id="r1" rows="2">'+((state.reflection&&state.reflection.q1)||'')+'</textarea></div>'+
+   '<div class="field"><label>2. Which English expression was easiest for you?</label>'+
+   '<textarea id="r2" rows="2">'+((state.reflection&&state.reflection.q2)||'')+'</textarea></div>'+
+   '<div class="field"><label>3. Why is honest product information important for a buyer?</label>'+
+   '<textarea id="r3" rows="2">'+((state.reflection&&state.reflection.q3)||'')+'</textarea></div>'+
+   '<button class="btn" id="btnSaveRefl">💾 SAVE REFLECTION</button></div>';
+  $('#btnPlayAgain').onclick=()=>{ const keep={name:state.name,kelas:state.kelas,mode:state.mode,teamName:state.teamName,members:state.members,soundOn:state.soundOn};
+    state=Object.assign(freshState(),keep);state.started=true;save();renderDashboard();show('scrDash');toast('New mission started — good luck! 🚀'); };
+  $('#btnSaveRefl').onclick=()=>{ state.reflection={q1:$('#r1').value.trim(),q2:$('#r2').value.trim(),q3:$('#r3').value.trim()};save();
+    const arch=getArchive(); const e=arch.find(x=>x.sessionId===state.sessionId);
+    if(e){e.reflection=state.reflection;setArchive(arch);}
+    toast('💾 Reflection saved. Thank you for being honest!');sfx.correct(); };
+  pushArchive(pct,cat.t,acc);
+}
+function pushArchive(pct,cat,acc){
+  const arch=getArchive();
+  if(arch.find(x=>x.sessionId===state.sessionId))return;
+  arch.push({sessionId:state.sessionId,date:new Date().toLocaleString('id-ID'),name:state.name,kelas:state.kelas,
+    mode:state.mode,team:state.teamName||'',members:(state.members||[]).join('; '),
+    score:state.score,xp:state.xp,accuracy:acc,performance:pct,category:cat,
+    bestCombo:state.bestCombo,product:state.product,rubricTotal:state.rubric?state.rubric.total:null,
+    reflection:state.reflection});
+  setArchive(arch);
+}
+
+/* ================= TEACHER MODE ================= */
+function openTeacher(){ show('scrTeacher'); renderTeacher(); }
+function renderTeacher(){
+  const arch=getArchive(); const cur=loadSave();
+  let html='<h4 style="color:#c4b5fd;font-family:var(--disp)">🗂 Completed Missions ('+arch.length+')</h4>';
+  if(!arch.length)html+='<p style="color:var(--mut);font-size:.85rem">Belum ada hasil yang selesai. Hasil muncul otomatis setelah siswa menyelesaikan misi.</p>';
+  else{
+    html+='<table class="teacher-table"><tr><th>#</th><th>Name</th><th>Class</th><th>Mode</th><th>Score</th><th>XP</th><th>Acc.</th><th>Category</th><th>Date</th><th></th></tr>';
+    arch.forEach((e,i)=>{ html+='<tr><td>'+(i+1)+'</td><td>'+e.name+'</td><td>'+e.kelas+'</td><td>'+
+      (e.mode==='team'?'👥 '+(e.team||'team'):'👤 solo')+'</td><td>'+e.score+'/'+MAXSCORE+'</td><td>'+e.xp+'</td><td>'+e.accuracy+
+      '%</td><td>'+e.category+'</td><td style="font-size:.7rem">'+e.date+'</td>'+
+      '<td><button class="btn ghost small" onclick="showDetail('+i+')">👁 DETAIL</button></td></tr>'; });
+    html+='</table>';
+  }
+  html+='<div id="teacherDetail"></div>';
+  if(cur&&cur.started){
+    html+='<h4 style="color:#c4b5fd;font-family:var(--disp);margin-top:18px">⏳ Current Save (belum selesai)</h4>'+
+      '<p style="font-size:.85rem;color:var(--mut)">'+(cur.name||'?')+' · '+(cur.kelas||'?')+' · Level '+cur.level+
+      ' · XP '+cur.xp+' · Score '+cur.score+'</p>';
+  }
+  $('#teacherBody').innerHTML=html;
+}
+window.showDetail=function(i){
+  const e=getArchive()[i]; if(!e)return;
+  let d='<div class="card" style="margin-top:12px"><span class="tag">Detail — '+e.name+'</span>';
+  if(e.mode==='team')d+='<p style="font-size:.85rem;margin-top:8px"><b>Team:</b> '+e.team+' · Members: '+(e.members||'—')+'</p>';
+  if(e.product){ d+='<h4 style="color:#c4b5fd;font-family:var(--disp);margin-top:10px">🛒 Product: '+e.product.icon+' '+e.product.name+' ('+e.product.device+')</h4>'+
+    '<p style="font-size:.85rem;white-space:pre-wrap;color:#d6e2ff;border:1px dashed var(--line);border-radius:8px;padding:10px;margin-top:6px">'+e.product.desc+'</p>'+
+    '<p style="font-size:.8rem;color:var(--mut)">Rubric total: '+(e.rubricTotal??'—')+'/100 · Words: '+e.product.wc+'</p>'; }
+  if(e.reflection&&(e.reflection.q1||e.reflection.q2||e.reflection.q3)){
+    d+='<h4 style="color:#c4b5fd;font-family:var(--disp);margin-top:10px">🪞 Reflection</h4><ol style="font-size:.85rem;color:#d6e2ff;padding-left:20px">'+
+    '<li>'+(e.reflection.q1||'—')+'</li><li>'+(e.reflection.q2||'—')+'</li><li>'+(e.reflection.q3||'—')+'</li></ol>'; }
+  d+='</div>'; $('#teacherDetail').innerHTML=d;
+};
+$('#btnExport').onclick=()=>{
+  const arch=getArchive();
+  if(!arch.length){toast('No results to export yet.');return;}
+  const esc=v=>'"'+String(v==null?'':v).replace(/"/g,'""').replace(/\n/g,' ')+'"';
+  let csv='Name,Class,Mode,Team,Score,MaxScore,XP,Accuracy(%),Performance(%),Category,BestCombo,Product,Description,Words,RubricTotal,Reflection1,Reflection2,Reflection3,Date\n';
+  arch.forEach(e=>{ csv+=[esc(e.name),esc(e.kelas),e.mode,esc(e.team),e.score,MAXSCORE,e.xp,e.accuracy,e.performance,
+    esc(e.category),e.bestCombo,esc(e.product?e.product.name:''),esc(e.product?e.product.desc:''),
+    e.product?e.product.wc:'',e.rubricTotal??'',esc(e.reflection?e.reflection.q1:''),esc(e.reflection?e.reflection.q2:''),
+    esc(e.reflection?e.reflection.q3:''),esc(e.date)].join(',')+'\n'; });
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download='TECHZONE_hasil_'+new Date().toISOString().slice(0,10)+'.csv';a.click();
+  URL.revokeObjectURL(a.href);toast('⬇ CSV exported!');
+};
+$('#btnBackTeacher').onclick=()=>{ if(state&&state.started){show(state.finished?'scrFinal':'scrDash');if(!state.finished)renderDashboard();else renderFinal();}
+  else{show('scrStart');initStart();} };
+$('#btnClearArch').onclick=()=>{ if(confirm('Hapus SEMUA arsip hasil siswa?')){setArchive([]);renderTeacher();toast('Archive cleared.');} };
+
+/* ================= HUD BUTTONS & GLOBAL ================= */
+$('#btnSound').onclick=()=>{state.soundOn=!state.soundOn;updateHUD();save();if(state.soundOn)sfx.click();};
+$('#btnLC').onclick=openLC;
+$('#btnHome').onclick=()=>{ if(confirm('Back to dashboard? (Kembali ke dashboard?)')){clearInterval(L2Timer);$('#hudTimer').classList.add('hidden');renderDashboard();show('scrDash');} };
+$('#btnHint').onclick=()=>{
+  if(state.hints<=0){toast('No hints left! (Hint sudah habis.)');return;}
+  if(!window.hintFn){toast('No hint available here.');return;}
+  state.hints--;award(-20<0?0:0,0);state.xp=Math.max(0,state.xp-20);
+  toast('💡 Hint used (−20 XP). '+state.hints+' left.');
+  sfx.click();updateHUD();save();window.hintFn();
+};
+$('#btnTryAgain').onclick=()=>{ state.lives=3;state.score=Math.max(0,state.score-50);save();
+  $('#pauseOverlay').classList.add('hidden');updateHUD();toast('❤️ Lives refilled! −50 score. Keep going!');sfx.level(); };
+$('#btnReview').onclick=()=>{ openLC(); };
+/* keyboard 1–4 untuk pilihan ganda */
+document.addEventListener('keydown',e=>{
+  if($('#scrLevel').classList.contains('hidden'))return;
+  const k=parseInt(e.key,10);
+  if(k>=1&&k<=4){const opts=$$('#lvlBody .opt:not(:disabled)');if(opts[k-1])opts[k-1].click();}
+});
+document.addEventListener('click',()=>ac(),{once:true});
+
+/* ================= INIT ================= */
+(function init(){
+  const saved=loadSave();
+  if(saved){ state=saved;
+    if(state.started&&!state.finished){ /* lanjut via tombol continue */ }
+    else if(state.started&&state.finished){ show('scrStart'); initStart(); return; }
+  } else state=freshState();
+  show('scrStart'); initStart();
+})();
+</script>
+</body>
+</html>
